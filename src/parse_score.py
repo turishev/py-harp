@@ -1,3 +1,7 @@
+from collections import namedtuple
+
+Score_Pitch = namedtuple('Score_Pitch', ['step', 'octave', 'interval'])
+
 intervals = {
     '1b': -1,
     '1': 0,
@@ -46,6 +50,6 @@ def parse_score(score_str):
         step, octave = split_note(p)
         interval = intervals[step]
         octave = 1 if octave == 0 else octave
-        result.append((step, octave, interval))
+        result.append(Score_Pitch(step, octave, interval))
 
     print(result)
