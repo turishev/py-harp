@@ -41,7 +41,10 @@ def parse_score(score_str, score_notes=False):
     return [parse_note(p, score_notes) for p in score]
 
 def score_to_scale_intervals(score):
-    # score -> scale of chromatic intervals
+    '''
+    score -> scale of chromatic intervals
+    score : [ScorePitch]
+    '''
     return scale_intervals(score_steps_to_scale([p.interval for p in score]))
 
 def score_steps_to_scale(chrom_steps):
@@ -52,3 +55,9 @@ def score_steps_to_scale(chrom_steps):
 
 def scale_intervals(scale):
     return [scale[i] - scale[i-1] for i in range(1, len(scale))]
+
+def get_score_scale_intervals(score, score_notes=False):
+    '''
+    score : string
+    '''
+    return score_to_scale_intervals(parse_score(score, score_notes))

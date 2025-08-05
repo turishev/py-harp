@@ -1,6 +1,7 @@
 import enum
 from collections import namedtuple
 
+@enum.unique
 class Method(enum.Enum):
     BLOW = 0
     DRAW = 1
