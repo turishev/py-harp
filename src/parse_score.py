@@ -1,28 +1,29 @@
+from typing import TypeAlias
+
 from collections import namedtuple
 from scale import scale_pitch, scale_step
+
+ScorePitch = namedtuple('Score_Pitch', ['step', 'octave', 'interval'])
+
+ScoreType : TypeAlias = list[ScorePitch]
 
 class WrongScorePitch(Exception):
     def __init__(self, pitch): self.pitch = pitch
     def __str__ (self): return 'Wrong pitch symbol'
 
-ScorePitch = namedtuple('Score_Pitch', ['step', 'octave', 'interval'])
 
-
-def parse_note(score, parse_note=False):
-    # score like a#/1, bb/2, D/3 .. 
-    pitch_pair = score.strip().split('/') # octave delimiter
+def parse_note(score_str : str, parse_note=False) -> ScorePitch:
+    # score_str like a#/1, bb/2, D/3 ..
+    pitch_pair = score_str.strip().split('/') # octave delimiter
     try:
         step_part = pitch_pair[0]
 
-        if parse_note:
-            # score like a#/1, bb/2, D/3 .. 
+        if parse_note: # score_str like a#/1, bb/2, D/3 ..
             step = scale_step(step_part[0])
-        else:
-            # score like 1#/1, 3b/2, 4/3 .. 
+        else: # score_str like 1#/1, 3b/2, 4/3 ..
             step = int(step_part[0])
 
-        pitch  = scale_pitch(step)
-            
+        pitch = scale_pitch(step)
         alter_char = step_part[1] if len(step_part) > 1 else None
         step_str = str(step) + (alter_char if alter_char else '')
         octave = int(pitch_pair[1]) if len(pitch_pair) > 1 else 1
@@ -34,30 +35,42 @@ def parse_note(score, parse_note=False):
 
     return ScorePitch(step_str, 1 if octave == 0 else octave, interval_alt)
 
-def parse_score(score_str, score_notes=False):
+
+def parse_score(score_str : str, score_notes=False) -> list[ScorePitch]:
     print(f'score: {score_str}')
     if score_str == '': return []
     score = score_str.split(',')
     return [parse_note(p, score_notes) for p in score]
 
-def score_to_scale_intervals(score):
+
+def score_to_scale_intervals(score : ScoreType) -> list[int]:
     '''
     score -> scale of chromatic intervals
     score : [ScorePitch]
     '''
     return scale_intervals(score_steps_to_scale([p.interval for p in score]))
 
-def score_steps_to_scale(chrom_steps):
+
+def score_steps_to_scale(chrom_steps : list[int]) -> list[int]:
+    '''
+    return sorted intervals, started from 0 (normalized) 
+    '''
     scale = list(set(chrom_steps))
     scale.sort()
     min_interval = min(scale)
     return [p - min_interval for p in scale]
 
-def scale_intervals(scale):
+
+def score_to_scale(score : ScoreType) -> list[int]:
+    return score_steps_to_scale([p.interval for p in score])
+
+
+def scale_intervals(scale : list[int]) -> list[int]:
     return [scale[i] - scale[i-1] for i in range(1, len(scale))]
 
-def get_score_scale_intervals(score, score_notes=False):
+
+def get_score_scale_intervals(score_str : str, score_notes=False) -> list[int]:
     '''
     score : string
     '''
-    return score_to_scale_intervals(parse_score(score, score_notes))
+    return score_to_scale_intervals(parse_score(score_str, score_notes))
