@@ -1,4 +1,6 @@
+from __future__ import annotations # for list annotations
 from typing import TypeAlias
+
 
 from parse_score  import ScorePitch, score_to_scale_intervals, score_steps_to_scale, parse_note, parse_score, get_score_scale_intervals, score_to_scale
 from harmonicas import Method, harmonicas
