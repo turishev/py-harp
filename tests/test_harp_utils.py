@@ -1,70 +1,70 @@
 import pytest
 from harmonicas import Pitch
-from harp_utils import  _match_harp_to_score, _get_score_layout, get_harp_scale
+from harp_utils import  HarpScaleItem,_match_harp_to_score, _get_score_layout, get_harp_scale
 from harmonicas import Method
 
 richter_full_scale = [
-    (0, 1, Method.BLOW),
-    (1, 1, Method.DRAW_BEND1),
-    (2, 1, Method.DRAW),
-    (3, 1, Method.OVERBLOW),
-    (4, 2, Method.BLOW),
-    (5, 2, Method.DRAW_BEND2),
-    (7, 2, Method.DRAW),
-    (7, 3, Method.BLOW),
-    (8, 3, Method.DRAW_BEND3),
-    (9, 3, Method.DRAW_BEND2),
-    (10, 3, Method.DRAW_BEND1),
-    (11, 3, Method.DRAW),
-    (12, 4, Method.BLOW),
-    (13, 4, Method.DRAW_BEND1),
-    (14, 4, Method.DRAW),
-    (15, 4, Method.OVERBLOW),
-    (16, 5, Method.BLOW),
-    (17, 5, Method.DRAW),
-    (18, 5, Method.OVERBLOW),
-    (19, 6, Method.BLOW),
-    (20, 6, Method.DRAW_BEND1),
-    (21, 6, Method.DRAW),
-    (22, 6, Method.OVERBLOW),
-    (23, 7, Method.DRAW),
-    (24, 7, Method.BLOW),
-    (26, 8, Method.DRAW),
-    (27, 8, Method.BLOW_BEND1),
-    (28, 8, Method.BLOW),
-    (29, 9, Method.DRAW),
-    (30, 9, Method.BLOW_BEND1),
-    (31, 9, Method.BLOW),
-    (32, 9, Method.OVERDRAW),
-    (33, 10, Method.DRAW),
-    (34, 10, Method.BLOW_BEND2),
-    (35, 10, Method.BLOW_BEND1),
-    (36, 10, Method.BLOW),
-    (37, 10, Method.OVERDRAW)
+    HarpScaleItem(0, 1, Method.BLOW),
+    HarpScaleItem(1, 1, Method.DRAW_BEND1),
+    HarpScaleItem(2, 1, Method.DRAW),
+    HarpScaleItem(3, 1, Method.OVERBLOW),
+    HarpScaleItem(4, 2, Method.BLOW),
+    HarpScaleItem(5, 2, Method.DRAW_BEND2),
+    HarpScaleItem(7, 2, Method.DRAW),
+    HarpScaleItem(7, 3, Method.BLOW),
+    HarpScaleItem(8, 3, Method.DRAW_BEND3),
+    HarpScaleItem(9, 3, Method.DRAW_BEND2),
+    HarpScaleItem(10, 3, Method.DRAW_BEND1),
+    HarpScaleItem(11, 3, Method.DRAW),
+    HarpScaleItem(12, 4, Method.BLOW),
+    HarpScaleItem(13, 4, Method.DRAW_BEND1),
+    HarpScaleItem(14, 4, Method.DRAW),
+    HarpScaleItem(15, 4, Method.OVERBLOW),
+    HarpScaleItem(16, 5, Method.BLOW),
+    HarpScaleItem(17, 5, Method.DRAW),
+    HarpScaleItem(18, 5, Method.OVERBLOW),
+    HarpScaleItem(19, 6, Method.BLOW),
+    HarpScaleItem(20, 6, Method.DRAW_BEND1),
+    HarpScaleItem(21, 6, Method.DRAW),
+    HarpScaleItem(22, 6, Method.OVERBLOW),
+    HarpScaleItem(23, 7, Method.DRAW),
+    HarpScaleItem(24, 7, Method.BLOW),
+    HarpScaleItem(26, 8, Method.DRAW),
+    HarpScaleItem(27, 8, Method.BLOW_BEND1),
+    HarpScaleItem(28, 8, Method.BLOW),
+    HarpScaleItem(29, 9, Method.DRAW),
+    HarpScaleItem(30, 9, Method.BLOW_BEND1),
+    HarpScaleItem(31, 9, Method.BLOW),
+    HarpScaleItem(32, 9, Method.OVERDRAW),
+    HarpScaleItem(33, 10, Method.DRAW),
+    HarpScaleItem(34, 10, Method.BLOW_BEND2),
+    HarpScaleItem(35, 10, Method.BLOW_BEND1),
+    HarpScaleItem(36, 10, Method.BLOW),
+    HarpScaleItem(37, 10, Method.OVERDRAW)
 ]
 
 
 richter_diatonic_scale = [
-    (0, 1, Method.BLOW),
-    (2, 1, Method.DRAW),
-    (4, 2, Method.BLOW),
-    (7, 2, Method.DRAW),
-    (7, 3, Method.BLOW),
-    (11, 3, Method.DRAW),
-    (12, 4, Method.BLOW),
-    (14, 4, Method.DRAW),
-    (16, 5, Method.BLOW),
-    (17, 5, Method.DRAW),
-    (19, 6, Method.BLOW),
-    (21, 6, Method.DRAW),
-    (23, 7, Method.DRAW),
-    (24, 7, Method.BLOW),
-    (26, 8, Method.DRAW),
-    (28, 8, Method.BLOW),
-    (29, 9, Method.DRAW),
-    (31, 9, Method.BLOW),
-    (33, 10, Method.DRAW),
-    (36, 10, Method.BLOW),
+    HarpScaleItem(0, 1, Method.BLOW),
+    HarpScaleItem(2, 1, Method.DRAW),
+    HarpScaleItem(4, 2, Method.BLOW),
+    HarpScaleItem(7, 2, Method.DRAW),
+    HarpScaleItem(7, 3, Method.BLOW),
+    HarpScaleItem(11, 3, Method.DRAW),
+    HarpScaleItem(12, 4, Method.BLOW),
+    HarpScaleItem(14, 4, Method.DRAW),
+    HarpScaleItem(16, 5, Method.BLOW),
+    HarpScaleItem(17, 5, Method.DRAW),
+    HarpScaleItem(19, 6, Method.BLOW),
+    HarpScaleItem(21, 6, Method.DRAW),
+    HarpScaleItem(23, 7, Method.DRAW),
+    HarpScaleItem(24, 7, Method.BLOW),
+    HarpScaleItem(26, 8, Method.DRAW),
+    HarpScaleItem(28, 8, Method.BLOW),
+    HarpScaleItem(29, 9, Method.DRAW),
+    HarpScaleItem(31, 9, Method.BLOW),
+    HarpScaleItem(33, 10, Method.DRAW),
+    HarpScaleItem(36, 10, Method.BLOW),
 ]
 
 
@@ -91,57 +91,57 @@ def test_get_harp_scale():
     ]
 
     assert get_harp_scale(harp_scale) == [
-        (0, 2, Method.BLOW),
-        (3, 2, Method.DRAW),
-        (3, 3, Method.BLOW),
-        (7, 3, Method.DRAW),
-        (29, 10, Method.DRAW),
-        (32, 10, Method.BLOW),
+        HarpScaleItem(0, 2, Method.BLOW),
+        HarpScaleItem(3, 2, Method.DRAW),
+        HarpScaleItem(3, 3, Method.BLOW),
+        HarpScaleItem(7, 3, Method.DRAW),
+        HarpScaleItem(29, 10, Method.DRAW),
+        HarpScaleItem(32, 10, Method.BLOW),
     ]
 
     assert get_harp_scale(harp_scale, drawbend=True) == [
-        (0, 2, Method.BLOW),
-        (0, 2, Method.DRAW_BEND1),
-        (1, 2, Method.DRAW_BEND2),
-        (3, 2, Method.DRAW),
-        (3, 3, Method.BLOW),
-        (4, 3, Method.DRAW_BEND3),
-        (5, 3, Method.DRAW_BEND2),
-        (6, 3, Method.DRAW_BEND1),
-        (7, 3, Method.DRAW),
-        (29, 10, Method.DRAW),
-        (32, 10, Method.BLOW),
+        HarpScaleItem(0, 2, Method.BLOW),
+        HarpScaleItem(0, 2, Method.DRAW_BEND1),
+        HarpScaleItem(1, 2, Method.DRAW_BEND2),
+        HarpScaleItem(3, 2, Method.DRAW),
+        HarpScaleItem(3, 3, Method.BLOW),
+        HarpScaleItem(4, 3, Method.DRAW_BEND3),
+        HarpScaleItem(5, 3, Method.DRAW_BEND2),
+        HarpScaleItem(6, 3, Method.DRAW_BEND1),
+        HarpScaleItem(7, 3, Method.DRAW),
+        HarpScaleItem(29, 10, Method.DRAW),
+        HarpScaleItem(32, 10, Method.BLOW),
     ]
 
     assert get_harp_scale(harp_scale, blowbend=True) == [
-        (0, 2, Method.BLOW),
-        (3, 2, Method.DRAW),
-        (3, 3, Method.BLOW),
-        (7, 3, Method.DRAW),
-        (29, 10, Method.DRAW),
-        (30, 10, Method.BLOW_BEND2),
-        (31, 10, Method.BLOW_BEND1),
-        (32, 10, Method.BLOW),
+        HarpScaleItem(0, 2, Method.BLOW),
+        HarpScaleItem(3, 2, Method.DRAW),
+        HarpScaleItem(3, 3, Method.BLOW),
+        HarpScaleItem(7, 3, Method.DRAW),
+        HarpScaleItem(29, 10, Method.DRAW),
+        HarpScaleItem(30, 10, Method.BLOW_BEND2),
+        HarpScaleItem(31, 10, Method.BLOW_BEND1),
+        HarpScaleItem(32, 10, Method.BLOW),
     ]
 
     assert get_harp_scale(harp_scale, overblow=True) == [
-        (0, 2, Method.BLOW),
-        (3, 2, Method.DRAW),
-        (3, 3, Method.BLOW),
-        (7, 3, Method.DRAW),
-        (18, 6, Method.OVERBLOW),
-        (29, 10, Method.DRAW),
-        (32, 10, Method.BLOW),
+        HarpScaleItem(0, 2, Method.BLOW),
+        HarpScaleItem(3, 2, Method.DRAW),
+        HarpScaleItem(3, 3, Method.BLOW),
+        HarpScaleItem(7, 3, Method.DRAW),
+        HarpScaleItem(18, 6, Method.OVERBLOW),
+        HarpScaleItem(29, 10, Method.DRAW),
+        HarpScaleItem(32, 10, Method.BLOW),
     ]
 
     assert get_harp_scale(harp_scale, overdraw=True) == [
-        (0, 2, Method.BLOW),
-        (3, 2, Method.DRAW),
-        (3, 3, Method.BLOW),
-        (7, 3, Method.DRAW),
-        (29, 10, Method.DRAW),
-        (32, 10, Method.BLOW),
-        (33, 10, Method.OVERDRAW),
+        HarpScaleItem(0, 2, Method.BLOW),
+        HarpScaleItem(3, 2, Method.DRAW),
+        HarpScaleItem(3, 3, Method.BLOW),
+        HarpScaleItem(7, 3, Method.DRAW),
+        HarpScaleItem(29, 10, Method.DRAW),
+        HarpScaleItem(32, 10, Method.BLOW),
+        HarpScaleItem(33, 10, Method.OVERDRAW),
     ]
 
 
@@ -180,54 +180,54 @@ def test_match_harp_to_score():
 
 def test_get_score_layout():
     assert _get_score_layout([0,36], richter_diatonic_scale) == [
-        [[(0, 1, Method.BLOW)], [(36, 10, Method.BLOW)]],
+        [[HarpScaleItem(0, 1, Method.BLOW)], [HarpScaleItem(36, 10, Method.BLOW)]],
     ]
 
     assert _get_score_layout([0,7,36], richter_diatonic_scale) == [
        [
-           [(0, 1, Method.BLOW)],
-           [(7, 3, Method.BLOW), (7, 2, Method.DRAW)], # 2 options for the pitch
-           [(36, 10, Method.BLOW)],
+           [HarpScaleItem(0, 1, Method.BLOW)],
+           [HarpScaleItem(7, 3, Method.BLOW), HarpScaleItem(7, 2, Method.DRAW)], # 2 options for the pitch
+           [HarpScaleItem(36, 10, Method.BLOW)],
        ],
     ]
 
     assert _get_score_layout([1,8,37], richter_diatonic_scale) == [
        [
-           [(0, 1, Method.BLOW)],
-           [(7, 3, Method.BLOW), (7, 2, Method.DRAW)], # 2 options for the pitch
-           [(36, 10, Method.BLOW)],
+           [HarpScaleItem(0, 1, Method.BLOW)],
+           [HarpScaleItem(7, 3, Method.BLOW), HarpScaleItem(7, 2, Method.DRAW)], # 2 options for the pitch
+           [HarpScaleItem(36, 10, Method.BLOW)],
        ],
     ]
 
     assert _get_score_layout([1,3,5], richter_diatonic_scale) == [
        [
-           [(0, 1, Method.BLOW,),],
-           [(2, 1, Method.DRAW,),],
-           [(4, 2, Method.BLOW,),],
+           [HarpScaleItem(0, 1, Method.BLOW,),],
+           [HarpScaleItem(2, 1, Method.DRAW,),],
+           [HarpScaleItem(4, 2, Method.BLOW,),],
        ],
        [
-           [(12, 4, Method.BLOW,),],
-           [(14, 4, Method.DRAW,),],
-           [(16, 5, Method.BLOW,),],
+           [HarpScaleItem(12, 4, Method.BLOW,),],
+           [HarpScaleItem(14, 4, Method.DRAW,),],
+           [HarpScaleItem(16, 5, Method.BLOW,),],
        ],
        [
-           [(17, 5, Method.DRAW,),],
-           [(19, 6, Method.BLOW,),],
-           [(21, 6, Method.DRAW,),],
+           [HarpScaleItem(17, 5, Method.DRAW,),],
+           [HarpScaleItem(19, 6, Method.BLOW,),],
+           [HarpScaleItem(21, 6, Method.DRAW,),],
        ],
        [
-           [(19, 6, Method.BLOW,),],
-           [(21, 6, Method.DRAW,),],
-           [(23, 7, Method.DRAW,),],
+           [HarpScaleItem(19, 6, Method.BLOW,),],
+           [HarpScaleItem(21, 6, Method.DRAW,),],
+           [HarpScaleItem(23, 7, Method.DRAW,),],
        ],
        [
-           [(24, 7, Method.BLOW,),],
-           [(26, 8, Method.DRAW,),],
-           [(28, 8, Method.BLOW,),],
+           [HarpScaleItem(24, 7, Method.BLOW,),],
+           [HarpScaleItem(26, 8, Method.DRAW,),],
+           [HarpScaleItem(28, 8, Method.BLOW,),],
        ],
        [
-           [(29, 9, Method.DRAW,),],
-           [(31, 9, Method.BLOW,),],
-           [(33, 10, Method.DRAW,),],
+           [HarpScaleItem(29, 9, Method.DRAW,),],
+           [HarpScaleItem(31, 9, Method.BLOW,),],
+           [HarpScaleItem(33, 10, Method.DRAW,),],
        ],
    ]

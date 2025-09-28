@@ -1,16 +1,23 @@
 from __future__ import annotations # for list annotations
 #from typing import TypeAlias
-#from collections import namedtuple
+from dataclasses import dataclass
 
-from parse_score  import parse_note, parse_score, get_score_scale
+from score  import parse_note, parse_score, get_score_scale
 from harmonicas import Method, harmonicas
 
 
-#HarpScaleItem = namedtuple('HarpScaleItem', ['interval', 'hole', 'method'])
+@dataclass(frozen=True, slots=True)
+class HarpScaleItem:
+    interval : int
+    hole : int
+    method : Method
 
-def get_harp_scale(harp_layout, drawbend=False, blowbend=False, overblow=False, overdraw=False):
+
+def get_harp_scale(harp_layout,
+                   drawbend=False, blowbend=False, overblow=False, overdraw=False
+                   ) -> list[HarpScaleItem]:
     '''
-    returns: list[(interval : int, hole : int, method : Method)]
+    returns: list[HarpScaleItem]
     sorted by interval, interval started from 0, allowed many items with same interval
     '''
 
@@ -34,18 +41,18 @@ def get_harp_scale(harp_layout, drawbend=False, blowbend=False, overblow=False, 
              for p in harp_layout if p.method.value in methods]
     sorted_scale = sorted(scale, key=lambda v: v[0])
     low_pitch = sorted_scale[0][0]
-    return sorted_scale if low_pitch == 0 else [(p[0] - low_pitch, p[1], p[2]) for p in sorted_scale]
+    return [HarpScaleItem(p[0] - low_pitch, p[1], p[2]) for p in sorted_scale]
 
 
-def _match_harp_to_score(score_scale : list[int], harp_layout) -> list[list[int]]:
+def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpScaleItem]) -> list[list[int]]:
     '''
     match a harp to score
     score_scale : list[int] - score intervals list
-    harp_scale : list[(int, int, Method)]
+    harp_scale : list[HarpScaleItem]
     returns : list[list[int]] - list of suitable scales on the harp
     '''
 
-    hscale = [p[0] for p in harp_layout]
+    hscale = [p.interval for p in harp_scale]
     if hscale == []: return []
     hset = set(hscale)
 
@@ -63,15 +70,17 @@ def _match_harp_to_score(score_scale : list[int], harp_layout) -> list[list[int]
     return result
 
 
-def _get_harp_pitch_options(harp_scale, pitch : int):
-    res = [p for p in harp_scale if p[0] == pitch]
-    res.sort(key=lambda v: v[2].value)
+def _get_harp_pitch_options(harp_scale : list[HarpScaleItem], pitch : int) -> list[HarpScaleItem]:
+    res = [it for it in harp_scale if it.interval == pitch]
+    res.sort(key=lambda it: it.method.value)
     return res
 
 
-def _get_score_layout(score_scale : list[int], harp_scale):
+def _get_score_layout(score_scale : list[int],
+                      harp_scale : list[HarpScaleItem]) -> list[list[list[HarpScaleItem]]]:
     '''
-    returns: list[(int, Method)] - list of layouts, each list of hole+Method
+    returns: list[list[list[HarpScaleItem]]] - list of layouts, where each of it list of pitches
+    most inner list is a hole+method list of variants for given interval
     '''
     layouts : list[list[int]] = _match_harp_to_score(score_scale, harp_scale)
     return [
@@ -81,12 +90,13 @@ def _get_score_layout(score_scale : list[int], harp_scale):
         ]
         for layout in layouts
     ]
-    
+
 
 def _scale_to_layout_for_harp(harp_name : str, score_scale : list[int],
-                             drawbend=False, blowbend=False, overblow=False, overdraw=False):
+                             drawbend=False, blowbend=False, overblow=False, overdraw=False
+                              ) -> list[list[list[HarpScaleItem]]]:
     '''
-    returns: list[(int, Method)] - list of layouts, each list of hole+Method
+    returns: list[list[list[HarpScaleItem]]] - list of layouts
     '''
     try:
         harp = harmonicas[harp_name]
@@ -98,15 +108,16 @@ def _scale_to_layout_for_harp(harp_name : str, score_scale : list[int],
     return _get_score_layout(score_scale, hscale)
 
 
-def find_harp_for_score(score : str, score_notes=False,
+def find_harp_for_score(score : str, use_letters=False,
                         harps : str | None = None,
                         drawbend=False, blowbend=False, overblow=False, overdraw=False):
     '''
-    find a suitable harp for a score
+    find a suitable harp for a score,
+    use_letters : boolean - use note letters instead interval numbers
     '''
     result = {}
     harp_list = harmonicas.keys() if harps is None else harps.split(',')
-    score_scale = get_score_scale(parse_score(score, score_notes))
+    score_scale = get_score_scale(parse_score(score, use_letters))
     if harp_list == []: return result
 
     for harp_name in harp_list:
