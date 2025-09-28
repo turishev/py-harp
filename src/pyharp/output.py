@@ -1,6 +1,6 @@
 from harmonicas import Method
 
-def format_pitch(hole, method):
+def format_pitch(hole : int, method : Method) -> str:
     '''
     +1o - - overblow
     -8o - overdraw
@@ -28,15 +28,5 @@ def format_pitch(hole, method):
     
     return in_out + str(hole) + method_mark.get(method, '')
 
-
-def scale_layout_str(score_scale, harp_layouts):
-    # for layout in layouts:
-    #     for pitch_opts in layout:
-    #         for pitch in pitch_opts:
-    #             s = format_pitch(pitch[1], pitch[2])
-
-    # list(map(lambda layout: list(map(lambda pitch_opts:
-    #                                  , layout)),
-    #          layouts))
 
     

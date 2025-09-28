@@ -1,23 +1,27 @@
 from __future__ import annotations # for list annotations
-#from typing import TypeAlias
+from typing import TypeAlias
+
 from dataclasses import dataclass
 
-from score  import parse_note, parse_score, get_score_scale
+from score  import parse_note
 from harmonicas import Method, harmonicas
 
 
 @dataclass(frozen=True, slots=True)
-class HarpScaleItem:
+class HarpPitch:
     interval : int
     hole : int
     method : Method
 
 
+HarpScaleLayout : TypeAlias = list[list[HarpPitch]]
+
+
 def get_harp_scale(harp_layout,
                    drawbend=False, blowbend=False, overblow=False, overdraw=False
-                   ) -> list[HarpScaleItem]:
+                   ) -> list[HarpPitch]:
     '''
-    returns: list[HarpScaleItem]
+    returns: list[HarpPitch]
     sorted by interval, interval started from 0, allowed many items with same interval
     '''
 
@@ -41,14 +45,14 @@ def get_harp_scale(harp_layout,
              for p in harp_layout if p.method.value in methods]
     sorted_scale = sorted(scale, key=lambda v: v[0])
     low_pitch = sorted_scale[0][0]
-    return [HarpScaleItem(p[0] - low_pitch, p[1], p[2]) for p in sorted_scale]
+    return [HarpPitch(p[0] - low_pitch, p[1], p[2]) for p in sorted_scale]
 
 
-def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpScaleItem]) -> list[list[int]]:
+def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpPitch]) -> list[list[int]]:
     '''
     match a harp to score
     score_scale : list[int] - score intervals list
-    harp_scale : list[HarpScaleItem]
+    harp_scale : list[HarpPitch]
     returns : list[list[int]] - list of suitable scales on the harp
     '''
 
@@ -70,16 +74,16 @@ def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpScaleIte
     return result
 
 
-def _get_harp_pitch_options(harp_scale : list[HarpScaleItem], pitch : int) -> list[HarpScaleItem]:
+def _get_harp_pitch_options(harp_scale : list[HarpPitch], pitch : int) -> list[HarpPitch]:
     res = [it for it in harp_scale if it.interval == pitch]
     res.sort(key=lambda it: it.method.value)
     return res
 
 
 def _get_score_layout(score_scale : list[int],
-                      harp_scale : list[HarpScaleItem]) -> list[list[list[HarpScaleItem]]]:
+                      harp_scale : list[HarpPitch]) -> list[HarpScaleLayout]:
     '''
-    returns: list[list[list[HarpScaleItem]]] - list of layouts, where each of it list of pitches
+    returns: list[list[list[HarpPitch]]] - list of layouts, where each of it list of pitches
     most inner list is a hole+method list of variants for given interval
     '''
     layouts : list[list[int]] = _match_harp_to_score(score_scale, harp_scale)
@@ -92,11 +96,11 @@ def _get_score_layout(score_scale : list[int],
     ]
 
 
-def _scale_to_layout_for_harp(harp_name : str, score_scale : list[int],
+def scale_to_layout(harp_name : str, score_scale : list[int],
                              drawbend=False, blowbend=False, overblow=False, overdraw=False
-                              ) -> list[list[list[HarpScaleItem]]]:
+                              ) -> list[HarpScaleLayout]:
     '''
-    returns: list[list[list[HarpScaleItem]]] - list of layouts
+    returns: list[list[list[HarpPitch]]] - list of layouts
     '''
     try:
         harp = harmonicas[harp_name]
@@ -107,21 +111,3 @@ def _scale_to_layout_for_harp(harp_name : str, score_scale : list[int],
 
     return _get_score_layout(score_scale, hscale)
 
-
-def find_harp_for_score(score : str, use_letters=False,
-                        harps : str | None = None,
-                        drawbend=False, blowbend=False, overblow=False, overdraw=False):
-    '''
-    find a suitable harp for a score,
-    use_letters : boolean - use note letters instead interval numbers
-    '''
-    result = {}
-    harp_list = harmonicas.keys() if harps is None else harps.split(',')
-    score_scale = get_score_scale(parse_score(score, use_letters))
-    if harp_list == []: return result
-
-    for harp_name in harp_list:
-        layout = _scale_to_layout_for_harp(harp_name, score_scale, drawbend, blowbend, overblow, overdraw)
-        if layout != []: result[harp_name] = layout
-
-    return result
