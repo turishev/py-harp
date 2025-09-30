@@ -29,4 +29,9 @@ def format_pitch(hole : int, method : Method) -> str:
     return in_out + str(hole) + method_mark.get(method, '')
 
 
-    
+def format_layouts(harp_layouts):
+    for scale_name,layouts in harp_layouts.items():
+        print(f"harp tunning:{scale_name}")
+        layouts_str = "\n".join(["  ".join([p[0] + ':' + p[1] for p in layout])
+                                 for layout in layouts])
+        print(str(layouts_str) + "\n")

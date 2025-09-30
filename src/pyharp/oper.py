@@ -1,9 +1,8 @@
 from __future__ import annotations # for list annotations
 from typing import Mapping, Set
 #from typing import TypeAlias
-from dataclasses import dataclass
 from scale import interval_to_step
-from output import format_pitch
+from output import format_pitch, format_layouts
 
 from score  import parse_score, get_score_scale
 from harmonicas import harmonicas
@@ -33,3 +32,8 @@ def find_harp_for_score(score : str, use_letters=False,
     return layouts
 
 
+def find_harp_for_score_print(score : str, use_letters=False,
+                        harps : str | None = None,
+                        drawbend=False, blowbend=False, overblow=False, overdraw=False
+                        ) ->  None:
+    print(format_layouts(find_harp_for_score(score, use_letters, harps, drawbend, blowbend, overblow, overdraw)))
