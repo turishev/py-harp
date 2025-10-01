@@ -34,6 +34,7 @@ def get_harp_scale(harp_layout,
     if blowbend:
         methods.add(Method.BLOW_BEND1.value)
         methods.add(Method.BLOW_BEND2.value)
+        methods.add(Method.BLOW_BEND3.value)
     if overblow:
         methods.add(Method.OVERBLOW.value)
     if overdraw:
