@@ -1,6 +1,6 @@
 from harmonicas import Method
 
-def format_pitch(hole : int, method : Method) -> str:
+def format_pitch(hole : int, slide : bool, method : Method) -> str:
     '''
     +1o - - overblow
     -8o - overdraw
@@ -9,6 +9,8 @@ def format_pitch(hole : int, method : Method) -> str:
     '''
     blow = [Method.BLOW, Method.OVERBLOW, Method.BLOW_BEND1, Method.BLOW_BEND2]
     draw = [Method.DRAW, Method.DRAW_BEND1, Method.DRAW_BEND2, Method.DRAW_BEND3, Method.OVERDRAW]
+
+    slide_mark = 's' if slide else ''
 
     method_mark = {
         Method.BLOW : '',
@@ -26,7 +28,7 @@ def format_pitch(hole : int, method : Method) -> str:
     elif method in draw: in_out = '-'
     else: in_out = ''
     
-    return in_out + str(hole) + method_mark.get(method, '')
+    return in_out + str(hole) + slide_mark + method_mark.get(method, '')
 
 
 def format_layouts(harp_layouts):

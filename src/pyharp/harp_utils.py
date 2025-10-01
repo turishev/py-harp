@@ -11,6 +11,7 @@ from harmonicas import Method, harmonicas
 class HarpPitch:
     interval : int
     hole : int
+    slide : bool
     method : Method
 
 
@@ -42,11 +43,11 @@ def get_harp_scale(harp_layout,
 
     if harp_layout == []: return []
 
-    scale = [(parse_note(p.pitch).interval, p.hole, p.method)
+    scale = [(parse_note(p.pitch).interval, p.hole, p.slide, p.method)
              for p in harp_layout if p.method.value in methods]
     sorted_scale = sorted(scale, key=lambda v: v[0])
     low_pitch = sorted_scale[0][0]
-    return [HarpPitch(p[0] - low_pitch, p[1], p[2]) for p in sorted_scale]
+    return [HarpPitch(p[0] - low_pitch, p[1], p[2], p[3]) for p in sorted_scale]
 
 
 def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpPitch]) -> list[list[int]]:
@@ -107,7 +108,8 @@ def scale_to_layout(harp_name : str, score_scale : list[int],
         harp = harmonicas[harp_name]
         harp_layout = harp['scale']
         hscale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
-    except:
+    except Exception as e:
+        print(e)
         return []
 
     return _get_score_layout(score_scale, hscale)

@@ -24,7 +24,7 @@ def find_harp_for_score(score : str, use_letters=False,
     for harp_name in harp_list:
         harp_layouts : list[HarpScaleLayout] = scale_to_layout(harp_name, score_scale, drawbend, blowbend, overblow, overdraw)
         formatted_layouts = [list(zip(score_scale_steps,
-                                 [','.join([format_pitch(p.hole, p.method) for p in pitches])
+                                 [','.join([format_pitch(p.hole, p.slide, p.method) for p in pitches])
                              for pitches in layout]))
                             for layout in harp_layouts]
         if harp_layouts != []: layouts[harp_name] = formatted_layouts
