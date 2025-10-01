@@ -1,5 +1,5 @@
 import argparse
-from oper import find_harp_for_score_print;
+from oper import find_harp_for_score_print, harmonica_scale_print, harmonica_list_print;
 
 def main():
     parser = argparse.ArgumentParser(
@@ -14,13 +14,22 @@ def main():
     parser.add_argument( '-b', '--blowbend', help='allow blow bends', action="store_true")
     parser.add_argument( '-o', '--overblow', help='allow draw overblow', action="store_true")
     parser.add_argument( '-w', '--overdraw', help='allow draw overdraw', action="store_true")
+    parser.add_argument( '-i', '--scale', help='print scale for harmonica')
+    parser.add_argument( '-l', '--list', help='print list of harmonicas', action="store_true")
 
     args = parser.parse_args()
     score = args.steps if args.steps else (args.notes if args.notes else '')
     use_letters = True if args.notes else False
-    find_harp_for_score_print(score, use_letters,
-                              harps=args.harps,
+
+    if args.list:
+        harmonica_list_print()
+    elif args.scale:
+        harmonica_scale_print(args.scale,
                               drawbend=args.drawbend, blowbend=args.blowbend, overblow=args.overblow, overdraw=args.overdraw)
+    else:
+        find_harp_for_score_print(score, use_letters,
+                                  harps=args.harps,
+                                  drawbend=args.drawbend, blowbend=args.blowbend, overblow=args.overblow, overdraw=args.overdraw)
 
 if __name__ == '__main__':
     main()

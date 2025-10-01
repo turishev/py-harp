@@ -23,7 +23,6 @@ def parse_note(note : str, use_letters=False) -> ScorePitch:
     '''
     pitch_pair = note.strip().split('/') # octave delimiter
     try:
-        print(pitch_pair)
         step_part = pitch_pair[0]
         step = scale_step(step_part[0]) if use_letters else int(step_part[0])
         if step is None: raise WrongScorePitch(str)
