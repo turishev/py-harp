@@ -5,16 +5,17 @@ def main():
     parser = argparse.ArgumentParser(
         prog='pyharp',
         description='Diatonic harmonica help util',
-        epilog='Text at the bottom of help')
+        epilog='To find a harp you must specify --steps or --notes arg'
+    )
 
     parser.add_argument( '-s', '--steps', help='scale steps (nambers and #, b)')
     parser.add_argument( '-n', '--notes', help='music score (letters and #, b)')
-    parser.add_argument( '-p', '--harps', help='harmonica list')
+    parser.add_argument( '-p', '--harps', help='allowed harmonicas list, separated comma')
     parser.add_argument( '-d', '--drawbend', help='allow draw bends', action="store_true")
     parser.add_argument( '-b', '--blowbend', help='allow blow bends', action="store_true")
     parser.add_argument( '-o', '--overblow', help='allow draw overblow', action="store_true")
     parser.add_argument( '-w', '--overdraw', help='allow draw overdraw', action="store_true")
-    parser.add_argument( '-i', '--scale', help='print scale for harmonica')
+    parser.add_argument( '-i', '--scale', help='print scale for harmonica', metavar='HARP_NAME')
     parser.add_argument( '-l', '--list', help='print list of harmonicas', action="store_true")
 
     args = parser.parse_args()
@@ -26,10 +27,12 @@ def main():
     elif args.scale:
         harmonica_scale_print(args.scale,
                               drawbend=args.drawbend, blowbend=args.blowbend, overblow=args.overblow, overdraw=args.overdraw)
-    else:
+    elif score:
         find_harp_for_score_print(score, use_letters,
                                   harps=args.harps,
                                   drawbend=args.drawbend, blowbend=args.blowbend, overblow=args.overblow, overdraw=args.overdraw)
+    else:
+        parser.print_help()
 
 if __name__ == '__main__':
     main()
