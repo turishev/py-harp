@@ -85,8 +85,7 @@ def _get_harp_pitch_options(harp_scale : list[HarpPitch], pitch : int) -> list[H
 def _get_score_layout(score_scale : list[int],
                       harp_scale : list[HarpPitch]) -> list[HarpScaleLayout]:
     '''
-    returns: list[list[list[HarpPitch]]] - list of layouts, where each of it list of pitches
-    most inner list is a hole+method list of variants for given interval
+    returns: list[HarpScaleLayout] - list of layouts, where each of it list of pitches
     '''
     layouts : list[list[int]] = _match_harp_to_score(score_scale, harp_scale)
     return [
@@ -102,11 +101,10 @@ def scale_to_layout(harp_name : str, score_scale : list[int],
                              drawbend=False, blowbend=False, overblow=False, overdraw=False
                               ) -> list[HarpScaleLayout]:
     '''
-    returns: list[list[list[HarpPitch]]] - list of layouts
+    returns: list[HarpScaleLayout] - list of layouts
     '''
     try:
-        harp = harmonicas[harp_name]
-        harp_layout = harp['scale']
+        harp_layout = harmonicas[harp_name]['scale']
         hscale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
     except Exception as e:
         print(e)
