@@ -98,8 +98,8 @@ def _get_score_layout(score_scale : list[int],
 
 
 def scale_to_layout(harp_name : str, score_scale : list[int],
-                             drawbend=False, blowbend=False, overblow=False, overdraw=False
-                              ) -> list[HarpScaleLayout]:
+                    drawbend=False, blowbend=False, overblow=False, overdraw=False
+                    ) -> list[HarpScaleLayout]:
     '''
     returns: list[HarpScaleLayout] - list of layouts
     '''
@@ -111,4 +111,27 @@ def scale_to_layout(harp_name : str, score_scale : list[int],
         return []
 
     return _get_score_layout(score_scale, hscale)
+
+
+# mapping intervals diff to position number
+harp_positions = {
+    0 : 1, # c
+    7 : 2, # g
+    2 : 3, # d
+    9 : 4, # a
+    4 : 5, # e
+    11: 6, # b
+    6 : 7, # gb
+    1 : 8, # db
+    8 : 9, # ab
+    3 : 10, # eb
+    10 : 11, # bb
+    5 : 12, # f
+}
+
+def get_harp_position(score_interval : int, harp_interval :  int) -> int:
+    sintv = score_interval % 12
+    hintv = harp_interval % 12
+    dintv = sintv - hintv + (0 if sintv >= hintv else 12)
+    return harp_positions.get(dintv, 0)
 
