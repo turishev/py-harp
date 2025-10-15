@@ -1,4 +1,12 @@
 from harmonicas import Method
+from dataclasses import dataclass
+from typing import Mapping
+
+@dataclass(frozen=True, slots=True)
+class ScaleLayoutFormatted:
+    harp_key : str
+    position : int
+    layout : list[tuple[str, str]]
 
 def format_pitch(hole : int, slide : bool, method : Method) -> str:
     '''
@@ -27,13 +35,16 @@ def format_pitch(hole : int, slide : bool, method : Method) -> str:
     if method in blow: in_out = '+'
     elif method in draw: in_out = '-'
     else: in_out = ''
-    
+
     return in_out + str(hole) + slide_mark + method_mark.get(method, '')
 
 
-def format_layouts(harp_layouts):
+def format_layouts(harp_layouts : Mapping[str, list[ScaleLayoutFormatted]]) -> str:
+    result = ""
+
     for scale_name,layouts in harp_layouts.items():
-        print(f"harp tuning: {scale_name}")
+        result = result + f"harp tuning: {scale_name}\n"
         layouts_str = "\n".join([str(l.position) + "st position  " +  "  ".join([p[0] + ':' + p[1] for p in l.layout])
                                  for l in layouts])
-        print(str(layouts_str) + "\n")
+        result = result + str(layouts_str) + "\n"
+    return result

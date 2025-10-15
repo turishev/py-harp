@@ -8,7 +8,6 @@ class ScorePitch:
     octave : int # a scale octave
     interval : int # interval in half-steps, relative to the scale root, started from 0
 
-ScoreType : TypeAlias = list[ScorePitch]
 
 class WrongScorePitch(Exception):
     def __init__(self, pitch): self.pitch = pitch
@@ -40,13 +39,13 @@ def parse_note(note : str, use_letters=False) -> ScorePitch:
     return ScorePitch(step_str, 1 if octave == 0 else octave, interval_alt)
 
 
-def parse_score(score_str : str, score_notes=False) -> ScoreType:
+def parse_score(score_str : str, score_notes=False) -> list[ScorePitch]:
     if score_str == '': return []
     score = score_str.split(',')
     return [parse_note(p, score_notes) for p in score]
 
 
-def get_score_scale(score : ScoreType) -> list[int]:
+def get_score_scale(score : list[ScorePitch]) -> list[int]:
     '''
     returns: list[int], sorted in ascending order, is not normalized
     '''
