@@ -1,7 +1,8 @@
 import pytest
 from harmonicas import Pitch
-from harp_utils import  HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale
+from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale
 from harmonicas import Method
+from score import split_note, parse_step, parse_note
 
 richter_full_scale = [
     HarpPitch(0, 1, False, Method.BLOW),
@@ -66,6 +67,62 @@ richter_diatonic_scale = [
     HarpPitch(33, 10, False, Method.DRAW),
     HarpPitch(36, 10, False, Method.BLOW),
 ]
+
+def test_split_note():
+    assert split_note("1") == ("1",0,1) 
+    assert split_note("1#") == ("1",1,1) 
+    assert split_note("1b") == ("1",-1,1) 
+    assert split_note("1/1") == ("1",0,1) 
+    assert split_note("1#/1") == ("1",1,1) 
+    assert split_note("1b/1") == ("1",-1,1) 
+    assert split_note("1/2") == ("1",0,2) 
+    assert split_note("1#/2") == ("1",1,2) 
+    assert split_note("1b/2") == ("1",-1,2)  
+    assert split_note("3/2") == ("3",0,2) 
+    assert split_note("3#/2") == ("3",1,2) 
+    assert split_note("3b/2") == ("3",-1,2) 
+    assert split_note("b/2") == ("b",0,2) 
+    assert split_note("b#/2") == ("b",1,2) 
+    assert split_note("bb/2") == ("b",-1,2) 
+
+
+def test_parse_step():
+    assert parse_step("1") == 0
+    assert parse_step("1b") == -1
+    assert parse_step("1#") == 1
+    assert parse_step("1/1") == 0
+    assert parse_step("1b/1") == -1
+    assert parse_step("1#/1") == 1
+    assert parse_step("7") == 11
+    assert parse_step("7b") == 10
+    assert parse_step("7#") == 12
+    assert parse_step("1/2") == 12
+    assert parse_step("1b/2") == 11
+    assert parse_step("1#/2") == 13
+    # assert parse_step("8") == 12 not allowed at now
+    assert parse_step("7#/2") == 24
+
+def test_parse_note():
+    assert parse_note("c") == 0
+    assert parse_note("cb") == -1
+    assert parse_note("c#") == 1
+    assert parse_note("c/1") == 0
+    assert parse_note("cb/1") == -1
+    assert parse_note("c#/1") == 1
+    assert parse_note("d") == 2
+    assert parse_note("b") == 11
+    assert parse_note("bb") == 10
+    assert parse_note("b#") == 12
+    assert parse_note("c/2") == 12
+    assert parse_note("cb/2") == 11
+    assert parse_note("c#/2") == 13
+    assert parse_note("b#/2") == 24
+    assert parse_note("B#/2") == 24
+    # root
+    assert parse_note("d", "c") == 2
+    assert parse_note("d", "d") == 0
+    assert parse_note("e", "d") == 2
+    assert parse_note("e/2", "d") == 14
 
 
 def test_get_harp_scale():

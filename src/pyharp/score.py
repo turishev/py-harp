@@ -1,12 +1,6 @@
-from dataclasses import dataclass
-from typing import TypeAlias
-from scale import scale_pitch, scale_step
-
-@dataclass(frozen=True, slots=True)
-class ScorePitch:
-    step : str # string representations a major scale step, contains numbers and # and b
-    octave : int # a scale octave
-    interval : int # interval in half-steps, relative to the scale root, started from 0
+# from dataclasses import dataclass
+# from typing import TypeAlias
+from scale import scale_step_pitch, scale_step, note_pitch
 
 
 class WrongScorePitch(Exception):
@@ -14,49 +8,78 @@ class WrongScorePitch(Exception):
     def __str__ (self): return 'Wrong pitch symbol'
 
 
-def parse_note(note : str, use_letters=False) -> ScorePitch:
+def split_note(note : str) -> tuple[str, int, int]:
     '''
-    note is letters: like a#/1, bb/2, D/3 .., when use_letters=True
-    or
-    note is scale step: like 1/1, 2b, 3#/2
+    note like 1/1, 2b, 3#/2  or a/2 or bb/3
     '''
     pitch_pair = note.strip().split('/') # octave delimiter
     try:
         step_part = pitch_pair[0]
-        step = scale_step(step_part[0]) if use_letters else int(step_part[0])
-        if step is None: raise WrongScorePitch(str)
-
-        pitch = scale_pitch(step)
-        alter_char = step_part[1] if len(step_part) > 1 else None
-        step_str = str(step) + (alter_char if alter_char else '')
+        alter_char = step_part[1] if len(step_part) > 1 else ''
+        alt = 1 if alter_char == '#' else (-1 if alter_char == 'b' else 0)
         octave = int(pitch_pair[1]) if len(pitch_pair) > 1 else 1
-        interval = pitch[1] + (octave - 1) * 12 if pitch else -2 #error
-        interval_alt = interval + 1 if alter_char == '#' else (interval - 1 if alter_char == 'b' else interval)
+        return (step_part[0], alt, octave)
     except Exception as e:
         print(e)
         raise WrongScorePitch(str)
 
-    return ScorePitch(step_str, 1 if octave == 0 else octave, interval_alt)
+
+def parse_step(step_str : str) -> int:
+    '''
+    note is scale step: like 1/1, 2b, 3#/2
+    '''
+    step_str,alt,octave =  split_note(step_str)
+
+    try:
+        step = int(step_str)
+    except Exception as e:
+        print(e)
+        raise WrongScorePitch(step_str)
+
+    pitch = scale_step_pitch(step)
+    if pitch is not None:
+        return  pitch + (octave - 1) * 12 + alt
+    else:
+        raise WrongScorePitch(step_str)
 
 
-def parse_score(score_str : str, score_notes=False) -> list[ScorePitch]:
+def parse_note(note : str, root="c") -> int:
+    '''
+    note like a#/1, bb/2, D/3
+    root is letter
+    '''
+    step_part,alt,octave =  split_note(note)
+    pitch = note_pitch(step_part)
+    root_pitch = note_pitch(root)
+    if pitch is not None and root_pitch is not None:
+        return  pitch - root_pitch + (octave - 1) * 12 + alt
+    else:
+        raise WrongScorePitch(note)
+
+
+def parse_steps(steps : str) -> list[int]:
+    if steps == '': return []
+    step_list = steps.split(',')
+    return [parse_step(p) for p in step_list]
+
+
+def parse_score(score_str : str, root="c") -> list[int]:
     if score_str == '': return []
     score = score_str.split(',')
-    return [parse_note(p, score_notes) for p in score]
+    return [parse_note(p, root) for p in score]
 
 
-def get_score_scale(score : list[ScorePitch]) -> list[int]:
+def get_score_scale(score : list[int]) -> list[int]:
     '''
     returns: list[int], sorted in ascending order, is not normalized
     '''
-    intervals = [p.interval for p in score]
-    scale = list(set(intervals))
+    scale = list(set(score))
     scale.sort()
     return scale
 
 
-def normalize_scale(scale : list[int]) -> list[int]:
-    if scale == []: return []
-    elif scale[0] != 0: return [p - scale[0] for p in scale]
-    else: return scale
+# def normalize_scale(scale : list[int]) -> list[int]:
+#     if scale == []: return []
+#     elif scale[0] != 0: return [p - scale[0] for p in scale]
+#     else: return scale
 

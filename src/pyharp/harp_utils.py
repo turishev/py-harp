@@ -3,7 +3,7 @@ from typing import TypeAlias
 
 from dataclasses import dataclass
 
-from score  import parse_note
+from score  import parse_step
 from harmonicas import Method, harmonicas
 
 
@@ -43,8 +43,9 @@ def get_harp_scale(harp_layout,
 
     if harp_layout == []: return []
 
-    scale = [(parse_note(p.pitch).interval, p.hole, p.slide, p.method)
+    scale = [(parse_step(p.pitch), p.hole, p.slide, p.method)
              for p in harp_layout if p.method.value in methods]
+
     sorted_scale = sorted(scale, key=lambda v: v[0])
     low_pitch = sorted_scale[0][0]
     return [HarpPitch(p[0] - low_pitch, p[1], p[2], p[3]) for p in sorted_scale]
@@ -134,4 +135,3 @@ def get_harp_position(score_interval : int, harp_interval :  int) -> int:
     hintv = harp_interval % 12
     dintv = sintv - hintv + (0 if sintv >= hintv else 12)
     return harp_positions.get(dintv, 0)
-

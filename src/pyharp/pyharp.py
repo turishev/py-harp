@@ -17,7 +17,7 @@ def main():
     parser.add_argument( '-w', '--overdraw', help='allow draw overdraw', action="store_true")
     parser.add_argument( '-i', '--scale', help='print scale for harmonica', metavar='HARP_NAME')
     parser.add_argument( '-l', '--list', help='print list of harmonicas', action="store_true")
-    parser.add_argument( '-r', '--root', help='scale root note')
+    parser.add_argument( '-r', '--root', help='scale root note (C is default)')
 
     args = parser.parse_args()
     score = args.steps if args.steps else (args.notes if args.notes else '')
@@ -32,7 +32,9 @@ def main():
                               overblow=args.overblow,
                               overdraw=args.overdraw)
     elif score:
-        find_harp_for_score_print(score, use_letters,
+        find_harp_for_score_print(score,
+                                  root=args.root,
+                                  use_letters=use_letters,
                                   harps=args.harps,
                                   drawbend=args.drawbend,
                                   blowbend=args.blowbend,

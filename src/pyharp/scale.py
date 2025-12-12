@@ -1,37 +1,22 @@
+from typing import Union, Optional
 from math import ceil
 C_MAJOR_SCALE = [('c', 0), ('d', 2), ('e', 4), ('f', 5), ('g', 7), ('a', 9), ('b', 11)]
 
 
-def scale_pitch(step : int) -> tuple[str, int] | None:
+def scale_step_pitch(step : int) -> Optional[int]:
     if step < 1 or step > 7: return None
-    return C_MAJOR_SCALE[step - 1]
+    return C_MAJOR_SCALE[step - 1][1]
 
-
-def find_pitch(letter) -> tuple[str, int] | None:
-    ll = letter.lower()
-    for i,p in enumerate(C_MAJOR_SCALE):
-        if p[0] == ll: return C_MAJOR_SCALE[i]
-    return None
-
-
-def note_pitch(note : str) -> int | None:
-    '''
-    returns: int if found or None
-    note : str consists of step letter and (maybe) alteration sign
-    like c# or db or Fb or G
-    '''
-    alter_char = note[1] if len(note) > 1 else ''
-    alter_pitch = {'#': 1, 'b': -1, '':0 }.get(alter_char)
-    if alter_pitch is None: return None
-    pitch = find_pitch(note[0])
-    if pitch is None: return None
-    return pitch[1] + alter_pitch
-
-
-def scale_step(letter : str) -> int | None:
+def scale_step(letter : str) -> Optional[int]:
     ll = letter.lower()
     for i,p in enumerate(C_MAJOR_SCALE):
         if p[0] == ll: return i + 1
+    return None
+
+def note_pitch(letter : str) -> Optional[int]:
+    ll = letter.lower()
+    for _,p in enumerate(C_MAJOR_SCALE):
+        if p[0] == ll: return p[1]
     return None
 
 
