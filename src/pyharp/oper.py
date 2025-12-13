@@ -52,7 +52,7 @@ def _get_layouts_for_scale_formatted(score_scale : list[int],
     return _format_scale_layouts(layouts)
 
 
-def find_harps_for_score(score : str, root="c", use_letters=False,
+def find_harps_for_score(score : str, root : str, use_letters : bool,
                          harps : Optional[str]=None,
                          drawbend=False, blowbend=False, overblow=False, overdraw=False
                          ) -> Mapping[str, list[ScaleLayoutFormatted]]:
@@ -60,7 +60,8 @@ def find_harps_for_score(score : str, root="c", use_letters=False,
     find a suitable harp for a score,
     harps: comma-separated str, is used to limit output list by desirable harmonica types
     use_letters : boolean - use note letters instead interval numbers
-    returns: dict which keys are harp-tuning names and values is list of lists of pair of a scale step and a harmonica hole-method
+    returns: dict which keys are harp-tuning names and values is list of lists of pair of a scale step
+    and a harmonica hole-method
     '''
     layouts = {}
     harp_list = harmonicas.keys() if harps is None else harps.split(',')
@@ -70,21 +71,25 @@ def find_harps_for_score(score : str, root="c", use_letters=False,
         score_pitches = parse_steps(score)
 
     score_scale =  get_score_scale(score_pitches)
-    # print(score_scale)
+    print(score_scale)
 
     for harp_name in harp_list:
-        formatted_layouts = _get_layouts_for_scale_formatted(score_scale, harp_name, drawbend, blowbend, overblow, overdraw)
+        formatted_layouts = _get_layouts_for_scale_formatted(score_scale,
+                                                             harp_name,
+                                                             drawbend, blowbend, overblow, overdraw)
         if formatted_layouts != []: layouts[harp_name] = formatted_layouts
 
-    # print(layouts)
+    print(layouts)
     return layouts
 
 
-def find_harp_for_score_print(score : str, root: str = "c", use_letters=False,
+def find_harp_for_score_print(score : str, root : str, use_letters : bool,
                               harps : Optional[str]=None,
                               drawbend=False, blowbend=False, overblow=False, overdraw=False
-                              ) ->  None:
-    print(format_layouts(find_harps_for_score(score, root, use_letters, harps, drawbend, blowbend, overblow, overdraw)))
+                              ) -> None:
+    print(format_layouts(find_harps_for_score(score, root, use_letters,
+                                              harps,
+                                              drawbend, blowbend, overblow, overdraw)))
 
 
 def harmonica_scale_print(harp_name :  str,
@@ -94,7 +99,8 @@ def harmonica_scale_print(harp_name :  str,
     harp_layout = harp['scale']
     hscale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
     score_scale = [p.interval for p in hscale]
-    layouts = {harp_name : _get_layouts_for_scale_formatted(score_scale, harp_name, drawbend, blowbend, overblow, overdraw)}
+    layouts = {harp_name : _get_layouts_for_scale_formatted(score_scale, harp_name,
+                                                            drawbend, blowbend, overblow, overdraw)}
 
     print(format_layouts(layouts))
 

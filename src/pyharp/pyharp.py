@@ -21,7 +21,6 @@ def main():
 
     args = parser.parse_args()
     score = args.steps if args.steps else (args.notes if args.notes else '')
-    use_letters = True if args.notes else False
 
     if args.list:
         harmonica_list_print()
@@ -33,8 +32,8 @@ def main():
                               overdraw=args.overdraw)
     elif score:
         find_harp_for_score_print(score,
-                                  root=args.root,
-                                  use_letters=use_letters,
+                                  root=args.root if args.root else 'c',
+                                  use_letters=True if args.notes else False,
                                   harps=args.harps,
                                   drawbend=args.drawbend,
                                   blowbend=args.blowbend,

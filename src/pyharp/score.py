@@ -43,16 +43,16 @@ def parse_step(step_str : str) -> int:
         raise WrongScorePitch(step_str)
 
 
-def parse_note(note : str, root="c") -> int:
+def parse_note(note : str) -> int:
     '''
     note like a#/1, bb/2, D/3
     root is letter
     '''
     step_part,alt,octave =  split_note(note)
     pitch = note_pitch(step_part)
-    root_pitch = note_pitch(root)
-    if pitch is not None and root_pitch is not None:
-        return  pitch - root_pitch + (octave - 1) * 12 + alt
+
+    if pitch is not None:
+        return pitch + (octave - 1) * 12 + alt
     else:
         raise WrongScorePitch(note)
 
@@ -63,10 +63,12 @@ def parse_steps(steps : str) -> list[int]:
     return [parse_step(p) for p in step_list]
 
 
-def parse_score(score_str : str, root="c") -> list[int]:
+def parse_score(score_str : str, root : str) -> list[int]:
     if score_str == '': return []
+    root_pitch = parse_note(root)
     score = score_str.split(',')
-    return [parse_note(p, root) for p in score]
+    score_shift = 0 if root_pitch == 0 else (root_pitch // 12 + 1) * 12 - root_pitch
+    return [parse_note(p) + score_shift for p in score]
 
 
 def get_score_scale(score : list[int]) -> list[int]:

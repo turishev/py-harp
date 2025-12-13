@@ -2,7 +2,7 @@ import pytest
 from harmonicas import Pitch
 from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale
 from harmonicas import Method
-from score import split_note, parse_step, parse_note
+from score import split_note, parse_step, parse_note, parse_score
 
 richter_full_scale = [
     HarpPitch(0, 1, False, Method.BLOW),
@@ -118,11 +118,12 @@ def test_parse_note():
     assert parse_note("c#/2") == 13
     assert parse_note("b#/2") == 24
     assert parse_note("B#/2") == 24
-    # root
-    assert parse_note("d", "c") == 2
-    assert parse_note("d", "d") == 0
-    assert parse_note("e", "d") == 2
-    assert parse_note("e/2", "d") == 14
+
+
+def test_parse_score():
+    assert parse_score("c,d,e,f,g,a,b", "c") == [0, 2, 4, 5, 7, 9, 11]
+    assert parse_score("c,d,e,f,g,a,b", "a") == [3, 5, 7, 8, 10, 12, 14]
+    assert parse_score("c,a,a/2", "a/2") == [3, 12, 24]
 
 
 def test_get_harp_scale():
