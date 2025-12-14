@@ -1,6 +1,6 @@
 import pytest
 from harmonicas import Pitch, Method
-from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale, get_harp_key
+from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale, get_harp_key, get_scale_note
 from score import split_note, parse_step, parse_note, parse_score
 
 richter_full_scale = [
@@ -294,3 +294,11 @@ def test_get_harp_key():
     assert get_harp_key(2, "g") == "c"
     assert get_harp_key(3, "g") == "f"
     
+def test_get_scale_note():
+    assert get_scale_note("c", "1") == "c"
+    assert get_scale_note("c", "3b") == "eb"
+    assert get_scale_note("c", "3b/4") == "eb"
+    assert get_scale_note("c", "7") == "b"
+    assert get_scale_note("c", "7#") == "c"
+    assert get_scale_note("g", "1") == "g"
+    assert get_scale_note("g", "1/2") == "g"

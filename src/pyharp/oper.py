@@ -39,7 +39,7 @@ def _format_scale_layout(layout : ScoreScaleLayout, scale_root : str) -> ScaleLa
         )
         for pair in layout
     ]
-    return ScaleLayoutFormatted(harp_key, position, scale_fromatted)
+    return ScaleLayoutFormatted(harp_key, position, scale_root, scale_fromatted)
 
 
 def _format_scale_layouts(layouts : list[ScoreScaleLayout], scale_root : str) -> list[ScaleLayoutFormatted]:

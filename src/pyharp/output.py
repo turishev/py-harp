@@ -1,11 +1,13 @@
 from harmonicas import Method
 from dataclasses import dataclass
 from typing import Mapping
+from harp_utils import get_scale_note
 
 @dataclass(frozen=True, slots=True)
 class ScaleLayoutFormatted:
     harp_key : str
     position : int
+    scale_root : str
     layout : list[tuple[str, str]]
 
 def format_pitch(hole : int, slide : bool, method : Method) -> str:
@@ -46,7 +48,8 @@ def format_layouts(harp_layouts : Mapping[str, list[ScaleLayoutFormatted]]) -> s
         result = result + f"Harp tuning: {scale_name}\n"
         layouts_str = "\n".join(["key " + l.harp_key.capitalize() + " "
                                  + str(l.position) + " pos  "
-                                 +  "  ".join([p[0] + ':' + p[1] for p in l.layout])
+                                 +  "  ".join([p[0] + "(" + get_scale_note(l.scale_root, p[0]).capitalize() + ")"
+                                               + ':' + p[1] for p in l.layout])
                                  for l in layouts])
         result = result + str(layouts_str) + "\n"
     return result
