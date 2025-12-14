@@ -43,13 +43,17 @@ def format_pitch(hole : int, slide : bool, method : Method) -> str:
 
 def format_layouts(harp_layouts : Mapping[str, list[ScaleLayoutFormatted]]) -> str:
     result = ""
+    layout_frmt = "key {key} {pos} pos {layout}"
+    pitch_frmt = "{step}({note}):{method}"
 
     for scale_name,layouts in harp_layouts.items():
         result = result + f"Harp tuning: {scale_name}\n"
-        layouts_str = "\n".join(["key " + l.harp_key.capitalize() + " "
-                                 + str(l.position) + " pos  "
-                                 +  "  ".join([p[0] + "(" + get_scale_note(l.scale_root, p[0]).capitalize() + ")"
-                                               + ':' + p[1] for p in l.layout])
+        layouts_str = "\n".join([layout_frmt.format(key=l.harp_key.capitalize(),
+                                                    pos=str(l.position),
+                                                    layout="  ".join([pitch_frmt.format(step=p[0],
+                                                                                        note=get_scale_note(l.scale_root, p[0]).capitalize(),
+                                                                                        method=p[1])
+                                               for p in l.layout]))
                                  for l in layouts])
         result = result + str(layouts_str) + "\n"
     return result
