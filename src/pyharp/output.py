@@ -43,8 +43,10 @@ def format_layouts(harp_layouts : Mapping[str, list[ScaleLayoutFormatted]]) -> s
     result = ""
 
     for scale_name,layouts in harp_layouts.items():
-        result = result + f"harp tuning: {scale_name}\n"
-        layouts_str = "\n".join([str(l.position) + "st position  " +  "  ".join([p[0] + ':' + p[1] for p in l.layout])
+        result = result + f"Harp tuning: {scale_name}\n"
+        layouts_str = "\n".join(["key " + l.harp_key.capitalize() + " "
+                                 + str(l.position) + " pos  "
+                                 +  "  ".join([p[0] + ':' + p[1] for p in l.layout])
                                  for l in layouts])
         result = result + str(layouts_str) + "\n"
     return result

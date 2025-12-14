@@ -7,7 +7,7 @@ from scale import interval_to_step
 from output import ScaleLayoutFormatted, format_pitch, format_layouts
 from score  import parse_score, parse_steps, get_score_scale
 from harmonicas import harmonicas
-from harp_utils import HarpPitch, HarpScaleLayout, scale_to_layout, get_harp_scale, get_harp_position
+from harp_utils import HarpPitch, HarpScaleLayout, scale_to_layout, get_harp_scale, get_harp_position, get_harp_key
 
 ScoreScaleLayout : TypeAlias = list[tuple[int, list[HarpPitch]]] # map scale interval -> list[HarpPitch]
 
@@ -25,11 +25,13 @@ def _get_layouts_for_scale(score_scale : list[int],
     return layouts
 
 
-def _format_scale_layout(layout : ScoreScaleLayout) -> ScaleLayoutFormatted:
+def _format_scale_layout(layout : ScoreScaleLayout, scale_root : str) -> ScaleLayoutFormatted:
+    # note: we can use any layout element (first) to figure out a position for melody 
     scale_first_interval = layout[0][0]
     harp_first_interval = layout[0][1][0].interval
-    harp_key = 'c' #TODO
     position = get_harp_position(scale_first_interval, harp_first_interval)
+
+    harp_key = get_harp_key(position, scale_root)
     scale_fromatted = [
         (
             interval_to_step(pair[0]), # scale interval
@@ -40,16 +42,16 @@ def _format_scale_layout(layout : ScoreScaleLayout) -> ScaleLayoutFormatted:
     return ScaleLayoutFormatted(harp_key, position, scale_fromatted)
 
 
-def _format_scale_layouts(layouts : list[ScoreScaleLayout]) -> list[ScaleLayoutFormatted]:
-    return sorted([_format_scale_layout(layout) for layout in layouts], key=lambda v: v.position)
+def _format_scale_layouts(layouts : list[ScoreScaleLayout], scale_root : str) -> list[ScaleLayoutFormatted]:
+    return sorted([_format_scale_layout(layout, scale_root) for layout in layouts], key=lambda v: v.position)
 
 
-def _get_layouts_for_scale_formatted(score_scale : list[int],
+def _get_layouts_for_scale_formatted(score_scale : list[int], scale_root : str,
                                      harp_name : str,
                                      drawbend=False, blowbend=False, overblow=False, overdraw=False
                                      ) -> list[ScaleLayoutFormatted]:
     layouts = _get_layouts_for_scale(score_scale, harp_name, drawbend, blowbend, overblow, overdraw)
-    return _format_scale_layouts(layouts)
+    return _format_scale_layouts(layouts, scale_root)
 
 
 def find_harps_for_score(score : str, root : str, use_letters : bool,
@@ -74,7 +76,7 @@ def find_harps_for_score(score : str, root : str, use_letters : bool,
     print(score_scale)
 
     for harp_name in harp_list:
-        formatted_layouts = _get_layouts_for_scale_formatted(score_scale,
+        formatted_layouts = _get_layouts_for_scale_formatted(score_scale, root,
                                                              harp_name,
                                                              drawbend, blowbend, overblow, overdraw)
         if formatted_layouts != []: layouts[harp_name] = formatted_layouts
@@ -99,7 +101,8 @@ def harmonica_scale_print(harp_name :  str,
     harp_layout = harp['scale']
     hscale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
     score_scale = [p.interval for p in hscale]
-    layouts = {harp_name : _get_layouts_for_scale_formatted(score_scale, harp_name,
+    layouts = {harp_name : _get_layouts_for_scale_formatted(score_scale, 'c',
+                                                            harp_name,
                                                             drawbend, blowbend, overblow, overdraw)}
 
     print(format_layouts(layouts))

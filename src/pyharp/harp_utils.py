@@ -3,7 +3,7 @@ from typing import TypeAlias
 
 from dataclasses import dataclass
 
-from score  import parse_step
+from score  import parse_step, parse_note
 from harmonicas import Method, harmonicas
 
 
@@ -130,8 +130,17 @@ harp_positions = {
     5 : 12, # f
 }
 
+circle_of_fifths = ['c', 'g', 'd', 'a', 'e', 'b', 'f#', 'db', 'ab', 'eb', 'bb', 'f']
+
 def get_harp_position(score_interval : int, harp_interval :  int) -> int:
     sintv = score_interval % 12
     hintv = harp_interval % 12
-    dintv = sintv - hintv + (0 if sintv >= hintv else 12)
+    dintv = hintv - sintv + (0 if hintv >= sintv else 12)
     return harp_positions.get(dintv, 0)
+
+
+def get_harp_key(position : int, scale_root : str) -> str:
+    root_inx = circle_of_fifths.index(scale_root)
+    harp_inx = (root_inx - position + 1)
+    if harp_inx < 0: harp_inx = harp_inx + 12
+    return circle_of_fifths[harp_inx]

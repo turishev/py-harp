@@ -17,7 +17,8 @@ def main():
     parser.add_argument( '-w', '--overdraw', help='allow draw overdraw', action="store_true")
     parser.add_argument( '-i', '--scale', help='print scale for harmonica', metavar='HARP_NAME')
     parser.add_argument( '-l', '--list', help='print list of harmonicas', action="store_true")
-    parser.add_argument( '-r', '--root', help='scale root note (C is default)')
+    parser.add_argument( '-r', '--root', help='melody or scale root note (C is default)')
+    parser.add_argument( '-k', '--harp-key', help='harmonica key (C is default)') # TODO
 
     args = parser.parse_args()
     score = args.steps if args.steps else (args.notes if args.notes else '')

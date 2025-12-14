@@ -1,7 +1,6 @@
 import pytest
-from harmonicas import Pitch
-from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale
-from harmonicas import Method
+from harmonicas import Pitch, Method
+from harp_utils import HarpPitch,_match_harp_to_score, _get_score_layout, get_harp_scale, get_harp_key
 from score import split_note, parse_step, parse_note, parse_score
 
 richter_full_scale = [
@@ -289,3 +288,9 @@ def test_get_score_layout():
            [HarpPitch(33, 10, False, Method.DRAW,),],
        ],
    ]
+
+def test_get_harp_key():
+    assert get_harp_key(1, "g") == "g"
+    assert get_harp_key(2, "g") == "c"
+    assert get_harp_key(3, "g") == "f"
+    
