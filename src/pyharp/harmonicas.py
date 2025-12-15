@@ -732,7 +732,7 @@ harmonicas = {
             Pitch(7, False,  Method.DRAW,  '7/2'),
             Pitch(7, False,  Method.BLOW,  '1/3'),
 
-            Pitch(7, True,  Method.DRAW,  '1/2'),
+            Pitch(7, True,  Method.DRAW,  '1/3'),
             Pitch(7, True,  Method.BLOW,  '2b/3'),
 
             Pitch(8, False,  Method.DRAW,  '2/3'),
