@@ -10,7 +10,7 @@ def main():
 
     parser.add_argument( '-s', '--steps', help='scale steps (nambers and #, b)')
     parser.add_argument( '-n', '--notes', help='music score (letters and #, b)')
-    parser.add_argument( '-p', '--harps', help='allowed harmonicas list, separated comma')
+    parser.add_argument( '-t', '--tuning', help='allowed harmonica tunings list, separated comma')
     parser.add_argument( '-d', '--drawbend', help='allow draw bends', action="store_true")
     parser.add_argument( '-b', '--blowbend', help='allow blow bends', action="store_true")
     parser.add_argument( '-o', '--overblow', help='allow draw overblow', action="store_true")
@@ -35,7 +35,8 @@ def main():
         find_harp_for_score_print(score,
                                   root=args.root if args.root else 'c',
                                   use_letters=True if args.notes else False,
-                                  harps=args.harps,
+                                  harp_tuning=args.tuning,
+                                  harp_key=args.harp_key,
                                   drawbend=args.drawbend,
                                   blowbend=args.blowbend,
                                   overblow=args.overblow,

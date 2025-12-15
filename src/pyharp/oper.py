@@ -26,7 +26,7 @@ def _get_layouts_for_scale(score_scale : list[int],
 
 
 def _format_scale_layout(layout : ScoreScaleLayout, scale_root : str) -> ScaleLayoutFormatted:
-    # note: we can use any layout element (first) to figure out a position for melody 
+    # note: we can use any layout element (first) to figure out a position for melody
     scale_first_interval = layout[0][0]
     harp_first_interval = layout[0][1][0].interval
     position = get_harp_position(scale_first_interval, harp_first_interval)
@@ -55,7 +55,8 @@ def _get_layouts_for_scale_formatted(score_scale : list[int], scale_root : str,
 
 
 def find_harps_for_score(score : str, root : str, use_letters : bool,
-                         harps : Optional[str]=None,
+                         harp_tuning : Optional[str]=None,
+                         harp_key : Optional[str]=None,
                          drawbend=False, blowbend=False, overblow=False, overdraw=False
                          ) -> Mapping[str, list[ScaleLayoutFormatted]]:
     '''
@@ -66,31 +67,36 @@ def find_harps_for_score(score : str, root : str, use_letters : bool,
     and a harmonica hole-method
     '''
     layouts = {}
-    harp_list = harmonicas.keys() if harps is None else harps.split(',')
+    harp_tunnings_list = harmonicas.keys() if harp_tuning is None else harp_tuning.lower().split(',')
+    harp_keys_list = [] if harp_key is None else harp_key.lower().split(',')
+
     if use_letters:
         score_pitches = parse_score(score, root)
     else:
         score_pitches = parse_steps(score)
 
     score_scale =  get_score_scale(score_pitches)
-    print(score_scale)
+    # print(score_scale)
 
-    for harp_name in harp_list:
-        formatted_layouts = _get_layouts_for_scale_formatted(score_scale, root,
-                                                             harp_name,
+    for tunning in harp_tunnings_list:
+        formatted_layouts = _get_layouts_for_scale_formatted(score_scale,
+                                                             root,
+                                                             tunning,
                                                              drawbend, blowbend, overblow, overdraw)
-        if formatted_layouts != []: layouts[harp_name] = formatted_layouts
-
-    print(layouts)
+        if harp_keys_list != []:
+            formatted_layouts = [l for l in formatted_layouts if l.harp_key in harp_keys_list]
+        if formatted_layouts != []: layouts[tunning] = formatted_layouts
+    # print(layouts)
     return layouts
 
 
 def find_harp_for_score_print(score : str, root : str, use_letters : bool,
-                              harps : Optional[str]=None,
+                              harp_tuning : Optional[str]=None,
+                              harp_key : Optional[str]=None,
                               drawbend=False, blowbend=False, overblow=False, overdraw=False
                               ) -> None:
     print(format_layouts(find_harps_for_score(score, root, use_letters,
-                                              harps,
+                                              harp_tuning, harp_key,
                                               drawbend, blowbend, overblow, overdraw)))
 
 
