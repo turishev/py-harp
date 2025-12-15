@@ -1,7 +1,10 @@
+import sys
 import argparse
 from oper import find_harp_for_score_print, harmonica_scale_print, harmonica_list_print;
 
 def main():
+    print(' '.join(sys.argv[1:]))
+
     parser = argparse.ArgumentParser(
         prog='pyharp',
         description='Diatonic harmonica help util',
