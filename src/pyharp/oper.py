@@ -8,6 +8,7 @@ from output import ScaleLayoutFormatted, format_pitch, format_layouts
 from score  import parse_score, parse_steps, get_score_scale
 from harmonicas import harmonicas
 from harp_utils import HarpPitch, HarpScaleLayout, scale_to_layout, get_harp_scale, get_harp_position, get_harp_key
+import chords
 
 ScoreScaleLayout : TypeAlias = list[tuple[int, list[HarpPitch]]] # map scale interval -> list[HarpPitch]
 
@@ -98,6 +99,29 @@ def find_harp_for_score_print(score : str, root : str, use_letters : bool,
     print(format_layouts(find_harps_for_score(score, root, use_letters,
                                               harp_tuning, harp_key,
                                               drawbend, blowbend, overblow, overdraw)))
+
+
+def _find_harp_for_arpeggio(chord : str,
+                           harp_tuning : Optional[str]=None,
+                           harp_key : Optional[str]=None,
+                           drawbend=False, blowbend=False, overblow=False, overdraw=False
+                           ) -> Mapping[str, list[ScaleLayoutFormatted]]:
+    root,bass,scale = chords.parse_chord(chord) #TODO - return bass also
+    scale_str = ','.join(scale)
+    return find_harps_for_score(scale_str, root, False,
+                                harp_tuning, harp_key,
+                                drawbend, blowbend, overblow, overdraw)
+
+    
+def find_harp_for_arpeggio_print(chord : str,
+                                 harp_tuning : Optional[str]=None,
+                                 harp_key : Optional[str]=None,
+                                 drawbend=False, blowbend=False, overblow=False, overdraw=False
+                                 ) -> None:
+    res = _find_harp_for_arpeggio(chord, harp_tuning, harp_key,
+                                  drawbend, blowbend, overblow, overdraw)
+    print(format_layouts(res))
+
 
 
 def harmonica_scale_print(harp_name :  str,
