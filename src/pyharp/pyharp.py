@@ -7,13 +7,13 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog='pyharp',
-        description='Diatonic harmonica help util',
+        description='Harmonica utility for creating tabs and score layouts',
         epilog='To find a harp you must specify --steps or --notes arg'
     )
 
 
-    parser.add_argument( '-s', '--steps', help='scale steps (nambers and #, b)')
-    parser.add_argument( '-n', '--notes', help='music score (letters and #, b)')
+    parser.add_argument( '-s', '--steps', help='scale steps (nambers maybe followed by # or b)')
+    parser.add_argument( '-n', '--notes', help='music score (letters maybe followed by # or b)')
     parser.add_argument( '-a', '--arpeggio', help='find arpeggio for a chord', metavar='CHORD')
     parser.add_argument( '-r', '--root', help='melody, scale or chord root note (C is default)')
     parser.add_argument( '-t', '--tuning', help='allowed harmonica tunings list, separated by comma')
@@ -23,7 +23,7 @@ def main():
     parser.add_argument( '-o', '--overblow', help='allow draw overblow', action="store_true")
     parser.add_argument( '-w', '--overdraw', help='allow draw overdraw', action="store_true")
     parser.add_argument( '-i', '--scale', help='print scale for harmonica', metavar='HARP_TUNING')
-    parser.add_argument( '-l', '--list', help='print list of harmonicas', action="store_true")
+    parser.add_argument( '-l', '--list', help='print list of known harmonica tunings', action="store_true")
 
 
 
