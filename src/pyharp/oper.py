@@ -101,11 +101,11 @@ def find_harp_for_score_print(score : str, root : str, use_letters : bool,
                                               drawbend, blowbend, overblow, overdraw)))
 
 
-def _find_harp_for_arpeggio(chord : str,
-                           harp_tuning : Optional[str]=None,
-                           harp_key : Optional[str]=None,
-                           drawbend=False, blowbend=False, overblow=False, overdraw=False
-                           ) -> Mapping[str, list[ScaleLayoutFormatted]]:
+def _find_harp_for_chord(chord : str,
+                            harp_tuning : Optional[str]=None,
+                            harp_key : Optional[str]=None,
+                            drawbend=False, blowbend=False, overblow=False, overdraw=False
+                            ) -> Mapping[str, list[ScaleLayoutFormatted]]:
     root,bass,scale = chords.parse_chord(chord) #TODO - return bass also
     scale_str = ','.join(scale)
     return find_harps_for_score(scale_str, root, False,
@@ -113,12 +113,12 @@ def _find_harp_for_arpeggio(chord : str,
                                 drawbend, blowbend, overblow, overdraw)
 
     
-def find_harp_for_arpeggio_print(chord : str,
+def find_harp_for_chord_print(chord : str,
                                  harp_tuning : Optional[str]=None,
                                  harp_key : Optional[str]=None,
                                  drawbend=False, blowbend=False, overblow=False, overdraw=False
                                  ) -> None:
-    res = _find_harp_for_arpeggio(chord, harp_tuning, harp_key,
+    res = _find_harp_for_chord(chord, harp_tuning, harp_key,
                                   drawbend, blowbend, overblow, overdraw)
     print(format_layouts(res))
 
