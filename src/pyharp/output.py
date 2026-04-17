@@ -4,7 +4,7 @@ from typing import Mapping
 from harp_utils import get_scale_note
 
 @dataclass(frozen=True, slots=True)
-class ScaleLayoutFormatted:
+class ScaleLayout:
     harp_key : str
     position : int
     scale_root : str
@@ -41,7 +41,7 @@ def format_pitch(hole : int, slide : bool, method : Method) -> str:
     return in_out + str(hole) + slide_mark + method_mark.get(method, '')
 
 
-def format_layouts(harp_layouts : Mapping[str, list[ScaleLayoutFormatted]]) -> str:
+def format_layouts(harp_layouts : Mapping[str, list[ScaleLayout]]) -> str:
     result = ""
 
     def form_pitch(p, root):

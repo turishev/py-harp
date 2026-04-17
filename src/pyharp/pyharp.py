@@ -14,7 +14,7 @@ def main():
 
     parser.add_argument( '-s', '--steps', help='scale steps (nambers that can be followed by # or b)')
     parser.add_argument( '-n', '--notes', help='music score (letters that can be followed by # or b)')
-    # parser.add_argument( '-a', '--arpeggio', help='find arpeggio for a chord', metavar='CHORD')
+    parser.add_argument( '-a', '--arpeggio', help='find arpeggio for a chord', action="store_true")
     parser.add_argument( '-c', '--chord', help='find arpeggio for a chord', metavar='CHORD')
     parser.add_argument( '-r', '--root', help='melody, scale or chord root note (C is default)')
     parser.add_argument( '-t', '--tuning', help='allowed harmonica tunings list, separated by comma')
@@ -29,19 +29,36 @@ def main():
 
     args = parser.parse_args()
     score = args.steps if args.steps else (args.notes if args.notes else '')
+    
 
-    if args.list:
+    if args.steps and args.notes:
+        print("--notes (-n) and --steps (-s) are mutually exclusive arguments")
+    elif args.notes and not args.root:
+        print("--notes (-n) requires --root (-r) arg also")
+    elif args.list:
         oper.harmonica_list_print()
+
+        
     elif args.scale:
         oper.harmonica_scale_print(args.scale,
                                    drawbend=args.drawbend,
                                    blowbend=args.blowbend,
                                    overblow=args.overblow,
                                    overdraw=args.overdraw)
+    elif args.arpeggio:
+        oper.find_harp_for_arpeggio(score,
+                                    root=args.root,
+                                    use_letters=args.notes,
+                                    harp_tuning=args.tuning,
+                                    harp_key=args.harp_key,
+                                    drawbend=args.drawbend,
+                                    blowbend=args.blowbend,
+                                    overblow=args.overblow,
+                                    overdraw=args.overdraw)
     elif score:
         oper.find_harp_for_score_print(score,
-                                       root=args.root if args.root else 'c',
-                                       use_letters=True if args.notes else False,
+                                       root=args.root,
+                                       use_letters=args.notes,
                                        harp_tuning=args.tuning,
                                        harp_key=args.harp_key,
                                        drawbend=args.drawbend,

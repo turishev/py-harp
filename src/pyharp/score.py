@@ -1,6 +1,6 @@
 # from dataclasses import dataclass
 # from typing import TypeAlias
-from scale import scale_step_pitch, scale_step, note_pitch
+from scale import get_scale_degree, get_scale_step, get_note_scale_degree
 
 
 class WrongScorePitch(Exception):
@@ -26,7 +26,8 @@ def split_note(note : str) -> tuple[str, int, int]:
 
 def parse_step(step_str : str) -> int:
     '''
-    note is scale step: like 1/1, 2b, 3#/2
+    step_str : str, scale step: like 1/1, 2b, 3#/2
+    return : int, interval in the scale
     '''
     step_str,alt,octave =  split_note(step_str)
 
@@ -36,7 +37,8 @@ def parse_step(step_str : str) -> int:
         print(e)
         raise WrongScorePitch(step_str)
 
-    pitch = scale_step_pitch(step)
+    pitch = get_scale_degree(step)
+
     if pitch is not None:
         return  pitch + (octave - 1) * 12 + alt
     else:
@@ -45,11 +47,11 @@ def parse_step(step_str : str) -> int:
 
 def parse_note(note : str) -> int:
     '''
-    note like a#/1, bb/2, D/3
-    root is letter
+    note : str, note description like a#/1, bb/2, D/3
+    return : int, the 'C' scale  degree
     '''
     step_part,alt,octave =  split_note(note)
-    pitch = note_pitch(step_part)
+    pitch = get_note_scale_degree(step_part)
 
     if pitch is not None:
         return pitch + (octave - 1) * 12 + alt
@@ -58,22 +60,32 @@ def parse_note(note : str) -> int:
 
 
 def parse_steps(steps : str) -> list[int]:
+    '''
+    steps : str, comma-separated list of step signatures like 1#, 2b, 3/2
+    return : list of intervals in the scale
+    '''
     if steps == '': return []
     step_list = steps.split(',')
     return [parse_step(p) for p in step_list]
 
 
 def parse_score(score_str : str, root : str) -> list[int]:
+    '''
+    score_str : str, comma-separated list of note signatures
+    root : str, root note signature
+    return : list of a scale degrees that specified of root note
+    '''
     if score_str == '': return []
-    root_pitch = parse_note(root)
+    root_scale_degree = parse_note(root)
     score = score_str.split(',')
-    score_shift = 0 if root_pitch == 0 else (root_pitch // 12 + 1) * 12 - root_pitch
+    score_shift = 0 if root_scale_degree == 0 else (root_scale_degree // 12 + 1) * 12 - root_scale_degree
     return [parse_note(p) + score_shift for p in score]
 
 
 def get_score_scale(score : list[int]) -> list[int]:
     '''
-    returns: list[int], sorted in ascending order, is not normalized
+    score : list[int], list of scale degrees, unsorted, not unique 
+    return : list[int], scale - list of unique scale degrees, sorted in ascending order
     '''
     scale = list(set(score))
     scale.sort()
@@ -84,4 +96,3 @@ def get_score_scale(score : list[int]) -> list[int]:
 #     if scale == []: return []
 #     elif scale[0] != 0: return [p - scale[0] for p in scale]
 #     else: return scale
-

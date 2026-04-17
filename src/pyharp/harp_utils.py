@@ -3,7 +3,7 @@ from typing import TypeAlias
 
 from dataclasses import dataclass
 
-from scale import interval_to_note
+from scale import scale_degree_to_note
 from score  import parse_step, parse_note
 from harmonicas import Method, harmonicas
 
@@ -151,5 +151,5 @@ def get_scale_note(scale_root : str, step : str) -> str:
     root_interval = parse_note(scale_root)
     step_interval = parse_step(step)
     c_interval = (step_interval + root_interval) % 12
-    
-    return interval_to_note(c_interval) 
+
+    return scale_degree_to_note(c_interval)

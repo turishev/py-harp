@@ -10,6 +10,8 @@ all: test
 test:
 	pytest tests/
 
+test-verbose:
+	pytest -v tests/
 
 .ONESHELL:
 package: clean

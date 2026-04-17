@@ -1,0 +1,7 @@
+{
+  // "venvPath": ".",
+  // "venv": ".venv",
+  "include": ["src/pyharp", "tests"],
+  "exclude": ["pack"],
+  "extraPaths": ["src/pyharp"], // to pyright work in tests dir with project srcs 
+}
