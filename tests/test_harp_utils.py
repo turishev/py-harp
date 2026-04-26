@@ -146,96 +146,63 @@ def test_get_harp_scale():
 
 
 def test_match_harp_to_score():
-    assert _match_harp_to_score([1,3,5], richter_full_scale) == [
-        [0, 2, 4],
-        [1, 3, 5],
-        [3, 5, 7],
-        [5, 7, 9],
-        [7, 9, 11],
-        [8, 10, 12],
-        [9, 11, 13],
-        [10, 12, 14],
-        [11, 13, 15],
-        [12, 14, 16],
-        [13, 15, 17],
-        [14, 16, 18],
-        [15, 17, 19],
-        [16, 18, 20],
-        [17, 19, 21],
-        [18, 20, 22],
-        [19, 21, 23],
-        [20, 22, 24],
-        [22, 24, 26],
-        [24, 26, 28],
-        [26, 28, 30],
-        [27, 29, 31],
-        [28, 30, 32],
-        [29, 31, 33],
-        [30, 32, 34],
-        [31, 33, 35],
-        [32, 34, 36],
-        [33, 35, 37],
+    # major chord
+    assert _match_harp_to_score([0,4,7], richter_diatonic_scale) == [
+        [0, 4, 7, 12, 16, 19, 24, 28, 31, 36], # 1st position - root = 0,12,24,36
+        [2, 7, 11, 14, 19, 23, 26, 31] # 2st position - root = 7,19,31
     ]
+
+    # octaves test
+    assert _match_harp_to_score([0,36], richter_diatonic_scale) == [
+        [0, 12, 24, 36],
+    ]
+
 
 def test_get_score_layout():
+    # octaves test
     assert _get_score_layout([0,36], richter_diatonic_scale) == [
-        [[HarpPitch(0, 1, False, Method.BLOW)], [HarpPitch(36, 10, False, Method.BLOW)]],
+        [[HarpPitch(0, 1, False, Method.BLOW)],
+         [HarpPitch(12, 4, False, Method.BLOW)],
+         [HarpPitch(24, 7, False, Method.BLOW)],
+         [HarpPitch(36, 10, False, Method.BLOW)]],
     ]
 
-    assert _get_score_layout([0,7,36], richter_diatonic_scale) == [
-       [
-           [HarpPitch(0, 1, False, Method.BLOW)],
-           [HarpPitch(7, 3, False, Method.BLOW), HarpPitch(7, 2, False, Method.DRAW)], # 2 options for the pitch
+    assert _get_score_layout([0,4,7], richter_diatonic_scale) == [
+        [# 1st position
+            [HarpPitch(0, 1, False, Method.BLOW)],
+            [HarpPitch(4, 2, False, Method.BLOW)],
+            [# 2 options for the pitch
+                HarpPitch(7, 3, False, Method.BLOW),
+                HarpPitch(7, 2, False, Method.DRAW)
+            ],
+           [HarpPitch(12, 4, False, Method.BLOW)],
+           [HarpPitch(16, 5, False, Method.BLOW)],
+           [HarpPitch(19, 6, False, Method.BLOW)],
+           [HarpPitch(24, 7, False, Method.BLOW)],
+           [HarpPitch(28, 8, False, Method.BLOW)],
+           [HarpPitch(31, 9, False, Method.BLOW)],
            [HarpPitch(36, 10, False, Method.BLOW)],
-       ],
+        ],
+        [# 2nd position
+            [HarpPitch(2, 1, False, Method.DRAW)],
+            [
+                HarpPitch(7, 3, False, Method.BLOW),
+                HarpPitch(7, 2, False, Method.DRAW)
+            ],
+            [HarpPitch(11, 3, False, Method.DRAW)],
+            [HarpPitch(14, 4, False, Method.DRAW)],
+            [HarpPitch(19, 6, False, Method.BLOW)],
+            [HarpPitch(23, 7, False, Method.DRAW)],
+            [HarpPitch(26, 8, False, Method.DRAW)],
+            [HarpPitch(31, 9, False, Method.BLOW)],
+        ]
     ]
-
-    assert _get_score_layout([1,8,37], richter_diatonic_scale) == [
-       [
-           [HarpPitch(0, 1, False, Method.BLOW)],
-           [HarpPitch(7, 3, False, Method.BLOW), HarpPitch(7, 2, False, Method.DRAW)], # 2 options for the pitch
-           [HarpPitch(36, 10, False, Method.BLOW)],
-       ],
-    ]
-
-    assert _get_score_layout([1,3,5], richter_diatonic_scale) == [
-       [
-           [HarpPitch(0, 1, False, Method.BLOW,),],
-           [HarpPitch(2, 1, False, Method.DRAW,),],
-           [HarpPitch(4, 2, False, Method.BLOW,),],
-       ],
-       [
-           [HarpPitch(12, 4, False, Method.BLOW,),],
-           [HarpPitch(14, 4, False, Method.DRAW,),],
-           [HarpPitch(16, 5, False, Method.BLOW,),],
-       ],
-       [
-           [HarpPitch(17, 5, False, Method.DRAW,),],
-           [HarpPitch(19, 6, False, Method.BLOW,),],
-           [HarpPitch(21, 6, False, Method.DRAW,),],
-       ],
-       [
-           [HarpPitch(19, 6, False, Method.BLOW,),],
-           [HarpPitch(21, 6, False, Method.DRAW,),],
-           [HarpPitch(23, 7, False, Method.DRAW,),],
-       ],
-       [
-           [HarpPitch(24, 7, False, Method.BLOW,),],
-           [HarpPitch(26, 8, False, Method.DRAW,),],
-           [HarpPitch(28, 8, False, Method.BLOW,),],
-       ],
-       [
-           [HarpPitch(29, 9, False, Method.DRAW,),],
-           [HarpPitch(31, 9, False, Method.BLOW,),],
-           [HarpPitch(33, 10, False, Method.DRAW,),],
-       ],
-   ]
 
 def test_get_harp_key():
     assert get_harp_key(1, "g") == "g"
     assert get_harp_key(2, "g") == "c"
     assert get_harp_key(3, "g") == "f"
-    
+
 def test_get_scale_note():
     assert get_scale_note("c", "1") == "c"
     assert get_scale_note("c", "3b") == "eb"

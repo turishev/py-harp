@@ -19,6 +19,37 @@ class HarpPitch:
 HarpScaleLayout : TypeAlias = list[list[HarpPitch]]
 
 
+# mapping intervals diff to position number
+harp_positions = {
+    0 : 1, # c
+    7 : 2, # g
+    2 : 3, # d
+    9 : 4, # a
+    4 : 5, # e
+    11: 6, # b
+    6 : 7, # gb
+    1 : 8, # db
+    8 : 9, # ab
+    3 : 10, # eb
+    10 : 11, # bb
+    5 : 12, # f
+}
+
+circle_of_fifths = ['c', 'g', 'd', 'a', 'e', 'b', 'f#', 'db', 'ab', 'eb', 'bb', 'f']
+
+def get_harp_position(score_interval : int, harp_interval :  int) -> int:
+    sintv = score_interval % 12
+    hintv = harp_interval % 12
+    dintv = hintv - sintv + (0 if hintv >= sintv else 12)
+    return harp_positions.get(dintv, 0)
+
+
+def get_harp_key(position : int, scale_root : str) -> str:
+    root_inx = circle_of_fifths.index(scale_root)
+    harp_inx = (root_inx - position + 1)
+    if harp_inx < 0: harp_inx += 12
+    return circle_of_fifths[harp_inx]
+
 def get_harp_scale(harp_layout,
                    drawbend=False, blowbend=False, overblow=False, overdraw=False
                    ) -> list[HarpPitch]:
@@ -63,18 +94,52 @@ def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpPitch]) 
     hscale = [p.interval for p in harp_scale]
     if hscale == []: return []
     hset = set(hscale)
+    print(f"hset:{hset}\n")
+    low_score_scale_degree = score_scale[0]
+    low_harp_scale_degree = harp_scale[0].interval
 
-    low_pitch = min(score_scale)
     result = []
 
+    first_scale_steps = set()
     shift = 0
     while True:
-        sscale = [p - low_pitch + shift for p in score_scale]
-        shift = shift + 1
-        sset = set(sscale)
-        if len(sset.difference(hset)) == 0: result.append(sscale)
-        if sscale[-1] >= hscale[-1]: break
+        sscale = [p - low_score_scale_degree + shift for p in score_scale]
+        print(f"\nsscale:{sscale}")
+        if sscale[-1] > hscale[-1]: break
 
+        res_scale = []
+
+        if sscale[0] % 12 not in first_scale_steps: 
+            first_scale_steps.add(sscale[0])
+            print(f"set:{set(sscale)}")
+            if len(set(sscale).difference(hset)) == 0: # layout is found
+                res_scale = sscale[:]
+                position = get_harp_position(low_score_scale_degree + shift, low_harp_scale_degree)
+                print(f"position:{position}")
+
+                # search in upper octaves
+                octave = 1
+                while True:
+                    upper_scale = [v + octave * 12 for v in sscale]
+                    up_part = [v for v in upper_scale if v in hset]
+                    print(f"upper_scale:{upper_scale} up_part:{up_part}")
+                    if len(up_part) > 0: res_scale += up_part
+                    if len(up_part) < len(upper_scale): break
+                    else: octave += 1
+
+                # add lower part of scale
+                lower_scale = [v - 12 for v in sscale]
+                print(f"lower_scale:{lower_scale}")
+                lo_part = [v for v in lower_scale if v in hset]
+                print(f"lo_part:{lo_part}")
+                if len(lo_part) > 0:
+                    res_scale = lo_part + res_scale
+                res_scale.sort()
+                print(f"res_scale:{res_scale}")
+                result.append(res_scale)
+        shift += 1                
+
+    print(f"result:{result}\n")
     return result
 
 
@@ -114,37 +179,6 @@ def scale_to_layout(harp_name : str, score_scale : list[int],
 
     return _get_score_layout(score_scale, hscale)
 
-
-# mapping intervals diff to position number
-harp_positions = {
-    0 : 1, # c
-    7 : 2, # g
-    2 : 3, # d
-    9 : 4, # a
-    4 : 5, # e
-    11: 6, # b
-    6 : 7, # gb
-    1 : 8, # db
-    8 : 9, # ab
-    3 : 10, # eb
-    10 : 11, # bb
-    5 : 12, # f
-}
-
-circle_of_fifths = ['c', 'g', 'd', 'a', 'e', 'b', 'f#', 'db', 'ab', 'eb', 'bb', 'f']
-
-def get_harp_position(score_interval : int, harp_interval :  int) -> int:
-    sintv = score_interval % 12
-    hintv = harp_interval % 12
-    dintv = hintv - sintv + (0 if hintv >= sintv else 12)
-    return harp_positions.get(dintv, 0)
-
-
-def get_harp_key(position : int, scale_root : str) -> str:
-    root_inx = circle_of_fifths.index(scale_root)
-    harp_inx = (root_inx - position + 1)
-    if harp_inx < 0: harp_inx += 12
-    return circle_of_fifths[harp_inx]
 
 
 def get_scale_note(scale_root : str, step : str) -> str:

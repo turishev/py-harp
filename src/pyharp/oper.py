@@ -20,9 +20,9 @@ def split_by_field(lst, field_name):
     return {k: list(g) for k, g in groupby(sorted_lst, key=key_func)}
 
 
-def _merge_layouts(layouts : list[ScaleLayout]):
+def _merge_layouts(layouts):
     layouts_arr_arr = split_by_field(layouts, 'harp_key')
-
+    return {}
 
 def _get_layouts_for_scale(score_scale : list[int],
                            harp_name : str,
@@ -33,6 +33,9 @@ def _get_layouts_for_scale(score_scale : list[int],
     '''
 
     harp_layouts : list[HarpScaleLayout] = scale_to_layout(harp_name, score_scale, drawbend, blowbend, overblow, overdraw)
+    print(f"_get_layouts_for_scale harp_layouts:{harp_layouts}\n")
+    print(f"harp_layouts:{harp_layouts}\n")
+    print(f"score_scale:{score_scale}\n")
     layouts = [list(zip(score_scale, layout)) for layout in harp_layouts]
     return layouts
 
@@ -44,6 +47,7 @@ def _format_scale_layout(layout : ScoreScaleLayout, scale_root : str) -> ScaleLa
     position = get_harp_position(scale_first_interval, harp_first_interval)
 
     harp_key = get_harp_key(position, scale_root)
+    print(f"_format_scale_layout:{layout}")
     scale_formatted = [
         (
             scale.scale_degree_to_step(pair[0]), # scale interval
