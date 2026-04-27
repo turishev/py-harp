@@ -20,14 +20,15 @@ def get_note_scale_degree(letter : str) -> Optional[int]:
     return None
 
 
-def scale_degree_to_step(interval : int) -> str:
+def scale_degree_to_step(scale_degree : int) -> str:
     '''
-    interval : chromatic interval in the major scale
-    return : str, that represents step number with optional alteration sign # or b
+    scale_degree : a scale degree in the major scale
+    return : str, that represents step number
+    with optional alteration sign (# or b) and octave number after slash.
     '''
-    if interval < 0: return ''
-    octave = interval // 12
-    step_chrom = interval % 12
+    #if scale_degree < 0: return ''
+    octave = scale_degree // 12
+    step_chrom = scale_degree % 12
     if step_chrom == 0: step = '1'
     elif step_chrom <= 2: step = '2'
     elif step_chrom <= 4: step = '3'
@@ -40,7 +41,7 @@ def scale_degree_to_step(interval : int) -> str:
     maj_steps = [p[1] for p in C_MAJOR_SCALE]
     alt = 'b' if not step_chrom in maj_steps else ''
 
-    return step + alt + ('/' + str(octave + 1) if octave > 0 else '')
+    return step + alt + ('/' + str(octave + 1) if octave != 0 else '')
 
 
 def scale_degree_to_note(interval : int) -> str:
@@ -60,18 +61,3 @@ def scale_degree_to_note(interval : int) -> str:
     alt = 'b' if not step_chrom in maj_steps else ''
 
     return step + alt + ('/' + str(octave + 1) if octave > 0 else '')
-
-def create_inversions(scale : list[int]) -> list[list[int]]:
-    '''
-    scale : list[int], ordered scale degrees list
-    return : list[list[int]], its items all are cyclic shifted original scale 
-    '''
-    result = [scale]
-    for _ in range(0, len(scale) - 1):
-        prev = result[-1]
-        next = prev[1:]
-        next.append(prev[0] + 12)
-        oct_num = next[0] // 12
-        next_norm = next if oct_num == 0 else [x - oct_num * 12 for x in next]
-        result.append(next_norm)
-    return result

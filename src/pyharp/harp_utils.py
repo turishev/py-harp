@@ -1,22 +1,19 @@
 from __future__ import annotations # for list annotations
-from typing import TypeAlias
+# from typing import TypeAlias
 
 from dataclasses import dataclass
 
 from scale import scale_degree_to_note
-from score  import parse_step, parse_note
-from harmonicas import Method, harmonicas
+import score
+import harmonicas as hm
 
 
 @dataclass(frozen=True, slots=True)
 class HarpPitch:
-    interval : int
+    scale_degree : int # root note = 0
     hole : int
     slide : bool
-    method : Method
-
-
-HarpScaleLayout : TypeAlias = list[list[HarpPitch]]
+    method : hm.Method
 
 
 # mapping intervals diff to position number
@@ -37,11 +34,9 @@ harp_positions = {
 
 circle_of_fifths = ['c', 'g', 'd', 'a', 'e', 'b', 'f#', 'db', 'ab', 'eb', 'bb', 'f']
 
-def get_harp_position(score_interval : int, harp_interval :  int) -> int:
-    sintv = score_interval % 12
-    hintv = harp_interval % 12
-    dintv = hintv - sintv + (0 if hintv >= sintv else 12)
-    return harp_positions.get(dintv, 0)
+
+def get_harp_position(shift : int) -> int:
+    return harp_positions.get(shift % 12, 0)
 
 
 def get_harp_key(position : int, scale_root : str) -> str:
@@ -50,140 +45,144 @@ def get_harp_key(position : int, scale_root : str) -> str:
     if harp_inx < 0: harp_inx += 12
     return circle_of_fifths[harp_inx]
 
-def get_harp_scale(harp_layout,
+
+def get_scale_note(scale_root : str, step : str) -> str:
+    root_interval = score.parse_note(scale_root)
+    step_interval = score.parse_step(step)
+    c_interval = (step_interval + root_interval) % 12
+
+    return scale_degree_to_note(c_interval)
+
+
+def get_harp_scale(harp_layout : list[hm.Pitch],
                    drawbend=False, blowbend=False, overblow=False, overdraw=False
                    ) -> list[HarpPitch]:
     '''
-    returns: list[HarpPitch]
-    sorted by interval, interval started from 0, allowed many items with same interval
+    harp_layout : list[hm.Pitch]
+    return: list[HarpPitch], 
+    sorted by interval, many items with same interval is allowed
     '''
-
-    methods = {Method.DRAW.value, Method.BLOW.value}
+    methods = {hm.Method.DRAW.value, hm.Method.BLOW.value}
 
     if drawbend:
-        methods.add(Method.DRAW_BEND1.value)
-        methods.add(Method.DRAW_BEND2.value)
-        methods.add(Method.DRAW_BEND3.value)
+        methods.add(hm.Method.DRAW_BEND1.value)
+        methods.add(hm.Method.DRAW_BEND2.value)
+        methods.add(hm.Method.DRAW_BEND3.value)
     if blowbend:
-        methods.add(Method.BLOW_BEND1.value)
-        methods.add(Method.BLOW_BEND2.value)
-        methods.add(Method.BLOW_BEND3.value)
+        methods.add(hm.Method.BLOW_BEND1.value)
+        methods.add(hm.Method.BLOW_BEND2.value)
+        methods.add(hm.Method.BLOW_BEND3.value)
     if overblow:
-        methods.add(Method.OVERBLOW.value)
+        methods.add(hm.Method.OVERBLOW.value)
     if overdraw:
-        methods.add(Method.OVERDRAW.value)
+        methods.add(hm.Method.OVERDRAW.value)
 
     if harp_layout == []: return []
 
-    scale = [(parse_step(p.pitch), p.hole, p.slide, p.method)
+    scale = [HarpPitch(scale_degree=score.parse_step(p.pitch), hole=p.hole, slide=p.slide, method=p.method)
              for p in harp_layout if p.method.value in methods]
 
-    sorted_scale = sorted(scale, key=lambda v: v[0])
-    low_pitch = sorted_scale[0][0]
-    return [HarpPitch(p[0] - low_pitch, p[1], p[2], p[3]) for p in sorted_scale]
+    sorted_scale = sorted(scale, key=lambda v: v.scale_degree)
+    return sorted_scale
 
+def get_harp_scale_degrees(scale : list[HarpPitch]) -> list[int]:
+    '''
+    scale : list[HarpPitch]
+    return: list[int], list of unique sorted scale degrees 
+    '''
+    return score.get_score_scale([v.scale_degree for v in scale])
 
-def _match_harp_to_score(score_scale : list[int], harp_scale : list[HarpPitch]) -> list[list[int]]:
+def _match_harp_to_score(score_scale : list[int],
+                         harp_scale : list[int],
+                         simple_match : bool = False) -> list[tuple[int, list[int]]]:
     '''
     match a harp to score
     score_scale : list[int] - score intervals list
     harp_scale : list[HarpPitch]
-    returns : list[list[int]] - list of suitable scales on the harp
+    returns : list[tuple[int, list[int]]] - list of tuples
+    where first tuple element is a shift scale for matching
+    and second is a matching result
     '''
 
-    hscale = [p.interval for p in harp_scale]
-    if hscale == []: return []
-    hset = set(hscale)
-    print(f"hset:{hset}\n")
+    hset = set(harp_scale)
+    # print(f"hset:{hset}\n")
     low_score_scale_degree = score_scale[0]
-    low_harp_scale_degree = harp_scale[0].interval
-
+    low_harp_scale_degree = harp_scale[0]
     result = []
-
     first_scale_steps = set()
-    shift = 0
-    while True:
-        sscale = [p - low_score_scale_degree + shift for p in score_scale]
-        print(f"\nsscale:{sscale}")
-        if sscale[-1] > hscale[-1]: break
+    shift = low_harp_scale_degree - low_score_scale_degree
 
-        res_scale = []
+    while True:
+        # print(f"shift:{shift}")
+        sscale = [p + shift for p in score_scale]
+        # print(f"\nsscale:{sscale}")
+        res_set = []
 
         if sscale[0] % 12 not in first_scale_steps: 
             first_scale_steps.add(sscale[0])
-            print(f"set:{set(sscale)}")
             if len(set(sscale).difference(hset)) == 0: # layout is found
-                res_scale = sscale[:]
-                position = get_harp_position(low_score_scale_degree + shift, low_harp_scale_degree)
-                print(f"position:{position}")
+                res_set = set(sscale[:])
 
-                # search in upper octaves
-                octave = 1
-                while True:
-                    upper_scale = [v + octave * 12 for v in sscale]
-                    up_part = [v for v in upper_scale if v in hset]
-                    print(f"upper_scale:{upper_scale} up_part:{up_part}")
-                    if len(up_part) > 0: res_scale += up_part
-                    if len(up_part) < len(upper_scale): break
-                    else: octave += 1
+                if not simple_match:
+                    # search in upper octaves
+                    octave = 1
+                    while True:
+                        upper_scale = [v + octave * 12 for v in sscale]
+                        up_part = [v for v in upper_scale if v in hset]
+                        # print(f"upper_scale:{upper_scale} up_part:{up_part}")
+                        if len(up_part) > 0: res_set.update(up_part)
+                        if len(up_part) < len(upper_scale): break
+                        else: octave += 1
 
-                # add lower part of scale
-                lower_scale = [v - 12 for v in sscale]
-                print(f"lower_scale:{lower_scale}")
-                lo_part = [v for v in lower_scale if v in hset]
-                print(f"lo_part:{lo_part}")
-                if len(lo_part) > 0:
-                    res_scale = lo_part + res_scale
-                res_scale.sort()
-                print(f"res_scale:{res_scale}")
-                result.append(res_scale)
-        shift += 1                
+                    # add lower part of scale
+                    lower_scale = [v - 12 for v in sscale]
+                    # print(f"lower_scale:{lower_scale}")
+                    lo_part = [v for v in lower_scale if v in hset]
+                    # print(f"lo_part:{lo_part}")
+                    if len(lo_part) > 0:
+                        res_set.update(lo_part)
 
-    print(f"result:{result}\n")
+                res_list = list(res_set)
+                res_list.sort()
+                # print(f"res_scale:{res_list}")
+                result.append((shift, res_list))
+
+        if sscale[-1] >= harp_scale[-1]: break
+        else: shift += 1
+    # print(f"result:{result}\n")
     return result
 
 
-def _get_harp_pitch_options(harp_scale : list[HarpPitch], pitch : int) -> list[HarpPitch]:
-    res = [it for it in harp_scale if it.interval == pitch]
-    res.sort(key=lambda it: it.method.value)
+def _get_harp_pitch_options(harp_scale : list[HarpPitch], scale_degree : int) -> list[HarpPitch]:
+    res = [it for it in harp_scale if it.scale_degree == scale_degree]
+    res.sort(key=lambda it: it.hole)
     return res
 
 
-def _get_score_layout(score_scale : list[int],
-                      harp_scale : list[HarpPitch]) -> list[HarpScaleLayout]:
-    '''
-    returns: list[HarpScaleLayout] - list of layouts, where each of it list of pitches
-    '''
-    layouts : list[list[int]] = _match_harp_to_score(score_scale, harp_scale)
-    return [
-        [
-            _get_harp_pitch_options(harp_scale, pitch)
-            for pitch in layout
-        ]
-        for layout in layouts
-    ]
-
-
 def scale_to_layout(harp_name : str, score_scale : list[int],
-                    drawbend=False, blowbend=False, overblow=False, overdraw=False
-                    ) -> list[HarpScaleLayout]:
+                    drawbend=False, blowbend=False, overblow=False, overdraw=False,
+                    exactly=False
+                    ) -> list[tuple[int, list[tuple[int, list[HarpPitch]]]]]:
     '''
-    returns: list[HarpScaleLayout] - list of layouts
+    return: list of pair of  position number and a layout.
+    Layout in turn is  list of pair of original scale degree and list of HarpPitch.
     '''
     try:
-        harp_layout = harmonicas[harp_name]['scale']
-        hscale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
+        harp_layout = hm.known_harmonicas_list[harp_name]['scale']
+        full_harp_scale = get_harp_scale(harp_layout, drawbend, blowbend, overblow, overdraw)
+        harp_scale = get_harp_scale_degrees(full_harp_scale)
+        layouts : list[tuple[int, list[int]]] = _match_harp_to_score(score_scale, harp_scale, exactly)
+
+        return [
+            (
+                get_harp_position(layout[0]), # harp position
+                [(scale_degree - layout[0], # original scale degree (not shifted)
+                  _get_harp_pitch_options(full_harp_scale, scale_degree)) for scale_degree in layout[1]] # pitch list
+             )
+            for layout in layouts
+        ]
+
     except Exception as e:
         print(e)
         return []
 
-    return _get_score_layout(score_scale, hscale)
-
-
-
-def get_scale_note(scale_root : str, step : str) -> str:
-    root_interval = parse_note(scale_root)
-    step_interval = parse_step(step)
-    c_interval = (step_interval + root_interval) % 12
-
-    return scale_degree_to_note(c_interval)

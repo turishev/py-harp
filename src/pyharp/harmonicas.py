@@ -22,7 +22,7 @@ class Pitch:
     method : Method
     pitch : str
 
-harmonicas = {
+known_harmonicas_list = {
     'richter' : {
         'description':'the diatonic standard richter tuning',
         'scale' : [
