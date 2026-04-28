@@ -112,7 +112,7 @@ def parse_chord(chord : str):
         meaning = chord[2:]
     else:
         key = chord[0].lower()
-        meaning = ''
+        meaning = chord[1:]
 
     scale = chord_meanings.get(meaning, ())
     bass = bass_part.lower() if bass_part is not None else key
