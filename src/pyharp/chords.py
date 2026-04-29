@@ -117,3 +117,15 @@ def parse_chord(chord : str):
     scale = chord_meanings.get(meaning, ())
     bass = bass_part.lower() if bass_part is not None else key
     return key,bass,scale
+
+def make_chords_info():
+    res = ''
+    for k,v in chord_meanings.items():
+        meaning = 'default' if k == '' else k
+        spec = ','.join(v)
+        res += f"{meaning}: {spec}\n"
+
+    return res
+
+
+        

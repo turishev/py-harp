@@ -1,6 +1,7 @@
 import sys
 import argparse
 import oper
+import chords
 
 def main():
     print(' '.join(sys.argv[1:]))
@@ -11,11 +12,10 @@ def main():
         epilog='To find a harp you must specify --steps or --notes arg'
     )
 
-
     parser.add_argument( '-s', '--steps', help='scale steps (nambers that can be followed by # or b)')
     parser.add_argument( '-n', '--notes', help='music score (letters that can be followed by # or b)')
     parser.add_argument( '-c', '--chord', help='find arpeggio for a chord', metavar='CHORD')
-    parser.add_argument( '-r', '--root', help='melody, scale or chord root note (C is default)')
+    parser.add_argument( '-r', '--root', help='melody or scale root note (C is default)')
     parser.add_argument( '-t', '--tuning', help='allowed harmonica tunings list, separated by comma')
     parser.add_argument( '-k', '--harp-key', help='allowed harmonica keys (C is default), separated by comma')
     parser.add_argument( '-d', '--drawbend', help='allow draw bends', action="store_true")
@@ -25,6 +25,7 @@ def main():
     parser.add_argument( '-x', '--exactly', help='find the scale exactly, without adding alternatives', action="store_true")
     parser.add_argument( '-i', '--scale', help='print scale for harmonica', metavar='HARP_TUNING')
     parser.add_argument( '-l', '--list', help='print list of known harmonica tunings', action="store_true")
+    parser.add_argument( '-p', '--chords-list', help='print list of known chords', action="store_true")
 
 
     args = parser.parse_args()
@@ -40,6 +41,8 @@ def main():
                                    blowbend=args.blowbend,
                                    overblow=args.overblow,
                                    overdraw=args.overdraw)
+    elif args.chords_list:
+        oper.print_chords_list()
     elif score:
         oper.find_harp_for_score_print(score,
                                        root=args.root,

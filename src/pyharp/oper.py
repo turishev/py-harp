@@ -129,3 +129,6 @@ def harmonica_scale_print(harp_tuning :  str,
 def harmonica_list_print():
     for harp_name, opts in known_harmonicas_list.items():
         print(f"{harp_name} : {opts['description']}")
+
+def print_chords_list():
+    print(chords.make_chords_info())
